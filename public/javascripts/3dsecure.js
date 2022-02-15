@@ -102,7 +102,6 @@ function setupDropin (clientToken) {
 }
 
 function onFetchClientToken(clientToken) {
-	console.log(clientToken);
   return setupDropin(clientToken).then(function(instance) { 
     dropin = instance;
 
@@ -173,10 +172,23 @@ payBtn.addEventListener('click', function(event) {
       return;
     }
 
+    //Sale request
+    fetch('/api/checkout', {
+      method: 'POST',
+      body: {'paymentMethodNonce': payload.nonce}
+    }).then(function(result) {
+      if (result.ok) {
+        console.log("Payment successfully sent")
+      } else {
+        console.log(result);
+        console.log("Payment failed")
+      }
+    }).catch(function(err) {
+    console.error(err);
+  });
     console.log('verification success:', payload);
     showNonce(payload, true);
       // send nonce and verification data to your server
-  });
-});
+  })});
 
 start();

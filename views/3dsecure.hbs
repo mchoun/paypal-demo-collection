@@ -6,6 +6,7 @@
   <div class="row">
     <div class="col-xs-12">
       <p class="lead">This is a functional example of performing 3D Secure verification on a credit card tokenized with Drop-in. For 3DS 2.0, it's highly recomended to supply additional information about the customer to achieve a frictionless flow (no challenge presented).</p>
+      <p>Original codepen can be found <a href="https://codepen.io/braintree/pen/KjWqGx">here</a>.</p>
     </div>
   </div>
   <div class="row">
@@ -91,8 +92,6 @@
       <input readonly name="nonce" class="form-control">
     </div>
       <br>
-      <p class="lead"> Reload the codepen to try another card. </p>
-      <br>
   </div>
 
   <div class="input-group pay-group bt-drop-in-container">
@@ -111,56 +110,3 @@
 </div>
 
 <script src="/javascripts/3dsecure.js"></script>
-
-{{!-- <script>
-  (async () => {
-
-  var button = document.querySelector('#submit-button');
-
-  var clientToken = await fetch("/api/client_token")
-    .then(response => response.text())
-    .catch(error => console.log('error', error));
-  
-
-  braintree.dropin.create({
-    // Insert your tokenization key here
-    authorization: clientToken,
-    container: '#drop-in',
-    threeDSecure: true
-  }).then(function (dropinInstance) {
-    button.addEventListener('click', function () {
-      dropinInstance.requestPaymentMethod().then(function (payload) {
-        // When the user clicks on the 'Submit payment' button this code will send the
-        // encrypted payment information in a variable called a payment method nonce
-        fetch('/api/checkout', {
-          method: 'POST',
-          body: {'paymentMethodNonce': payload.nonce}
-        }).then(function(result) {
-          // Tear down the Drop-in UI
-          dropinInstance.teardown(function (teardownErr) {
-            if (teardownErr) {
-              console.error('Could not tear down Drop-in UI!');
-            } else {
-              console.info('Drop-in UI has been torn down!');
-              // Remove the 'Submit payment' button
-              $('#submit-button').remove();
-            }
-          });
-
-          if (result.ok) {
-            $('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
-          } else {
-            console.log(result);
-            $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
-          }
-        });
-      }).catch(function(err) {
-        console.error(err);
-      });
-    });
-  }).catch(function (err) {
-    console.error(err);
-  }) ;
-  })();
-
-</script> --}}
