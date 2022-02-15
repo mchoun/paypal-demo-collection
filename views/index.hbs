@@ -29,8 +29,7 @@
     },
     googlePay: {
       merchantId: '800000000800'
-    },
-    threeDSecure: true
+    }
   }).then(function (dropinInstance) {
     button.addEventListener('click', function () {
       dropinInstance.requestPaymentMethod().then(function (payload) {

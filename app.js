@@ -6,9 +6,6 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var hostedFields = require('./routes/hostedfields')
-// var clienttoken = require('./routes/client_token')
-// const checkout = require('./routes/checkout');
 const braintreeExamples = require('./routes/braintree-examples');
 const apiRouter = require('./routes/api.js');
 
@@ -24,11 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Routers
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/hostedfields', hostedFields);
-// app.use('/client_token', clienttoken);
-// app.use('/checkout', checkout);
 app.use('/braintree-examples', braintreeExamples);
 app.use('/api', apiRouter);
 

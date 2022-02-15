@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const braintree = require('braintree');
 
+const gateway = new braintree.BraintreeGateway({
+	environment: braintree.Environment.Sandbox,
+	merchantId: "zxwjpt2w8t8yfjcq",
+	publicKey: "7d9ykdgnwypq55qg",
+	privateKey: "bfca3e0fa72c23c24edf211f297f6974"
+});
+
 router.get('/client_token', (req, res, next) => {
-	const gateway = new braintree.BraintreeGateway({
-		environment: braintree.Environment.Sandbox,
-		merchantId: "zxwjpt2w8t8yfjcq",
-		publicKey: "7d9ykdgnwypq55qg",
-		privateKey: "bfca3e0fa72c23c24edf211f297f6974"
-	});
 
 	// Create client token
 	gateway.clientToken.generate({
@@ -20,12 +21,7 @@ router.get('/client_token', (req, res, next) => {
 });
 
 router.post('/checkout', (req, res, next) => {
-	const gateway = new braintree.BraintreeGateway({
-		environment: braintree.Environment.Sandbox,
-		merchantId: "zxwjpt2w8t8yfjcq",
-		publicKey: "7d9ykdgnwypq55qg",
-		privateKey: "bfca3e0fa72c23c24edf211f297f6974"
-	});
+
 
 	// Use the payment method nonce here
 	const noneFromTheClient = req.body.paymentMethodNonce;
