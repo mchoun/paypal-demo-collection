@@ -1,0 +1,70 @@
+<div id="dropin-wrapper">
+  <div id="checkout-message"></div>
+  <div id="dropin-container"></div>
+  <button id="submit-button">Submit payment</button>
+  
+</div>
+<script>
+  (async () => {
+
+  var button = document.querySelector('#submit-button');
+
+  var clientToken = await fetch("/api/client_token")
+    .then(response => response.text())
+    .catch(error => console.log('error', error));
+  
+
+  braintree.dropin.create({
+    // Insert your tokenization key here
+    authorization: clientToken,
+    container: '#dropin-container',
+    card: {
+      cardholderName: true
+    },
+    paypal: {
+      flow: 'vault',
+    },
+    venmo: {
+      allowDesktop: true
+    },
+    googlePay: {
+      merchantId: '800000000800'
+    },
+    threeDSecure: true
+  }).then(function (dropinInstance) {
+    button.addEventListener('click', function () {
+      dropinInstance.requestPaymentMethod().then(function (payload) {
+        // When the user clicks on the 'Submit payment' button this code will send the
+        // encrypted payment information in a variable called a payment method nonce
+        fetch('/api/checkout', {
+          method: 'POST',
+          body: {'paymentMethodNonce': payload.nonce}
+        }).then(function(result) {
+          // Tear down the Drop-in UI
+          dropinInstance.teardown(function (teardownErr) {
+            if (teardownErr) {
+              console.error('Could not tear down Drop-in UI!');
+            } else {
+              console.info('Drop-in UI has been torn down!');
+              // Remove the 'Submit payment' button
+              $('#submit-button').remove();
+            }
+          });
+
+          if (result.ok) {
+            $('#checkout-message').html('<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>');
+          } else {
+            console.log(result);
+            $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
+          }
+        });
+      }).catch(function(err) {
+        console.error(err);
+      });
+    });
+  }).catch(function (err) {
+    console.error(err);
+  }) ;
+  })();
+
+</script>
