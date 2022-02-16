@@ -14,12 +14,17 @@
 </form>
 
 <script>
+  (async () => {
   var form = document.querySelector('#hosted-fields-form');
   var submit = document.querySelector('input[type="submit"]');
 
+  let clientToken = await fetch("/api/client_token")
+  .then(response => response.text())
+  .catch(error => console.log('error', error));
+
   braintree.client.create({
     // Insert your tokenization key here
-    authorization: 'sandbox_v2jfkq6z_zxwjpt2w8t8yfjcq'
+    authorization: clientToken,
   }, function (clientErr, clientInstance) {
     if (clientErr) {
       console.error(clientErr);
@@ -108,4 +113,6 @@
       }, false);
     });
   });
+  }
+  )();
 </script>
