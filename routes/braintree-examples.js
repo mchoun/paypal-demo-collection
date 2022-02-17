@@ -14,5 +14,9 @@ router.get('/3dsecure', function(req, res, next) {
   res.render('3dsecure', { title: 'Braintree 3D Secure Example', layout: 'layout' });
 });
 
+router.get('/hfpaypal', function(req, res, next) {
+  res.render('hfpaypal', { title: 'Braintree PayPal Example', layout: 'pplayout' });
+});
+
 
 module.exports = router;
