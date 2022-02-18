@@ -29,16 +29,6 @@
     });
 
 
-{{!-- 
-    btClient
-      .then( (clientInstance) => {
-      //Resolve two promises inside here for the paypalcheckout and also the data collector
-      return braintree.dataCollector.create({
-        client: clientInstance
-      });
-    }).then( (dataCollectorInstance) => {
-      dataCollectorInstance.getDeviceData().then( deviceData => myDeviceData = deviceData)
-    }) --}}
 
     btClient.then(clientInstance => braintree.paypalCheckout.create({client: clientInstance}))
       .then(paypalCheckoutInstance => paypalCheckoutInstance.loadPayPalSDK({ vault: true }))
@@ -65,12 +55,12 @@
         },
 
         onApprove: (data, actions) => {
-          return paypalCheckoutInstance.tokenizePayment(data).then(payload => {
-            console.log(myDeviceData);
+           paypalCheckoutInstance.tokenizePayment(data).then(payload => {
             fetch('/api/checkout',
               {
                 method: 'POST',
-                body: { 'paymentMethodNonce': payload.nonce }
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ "paymentMethodNonce": payload.nonce})
               })
               .then(result => result.json())
               .then(result => console.log(result))
