@@ -29,7 +29,6 @@
     });
 
 
-
     btClient.then(clientInstance => braintree.paypalCheckout.create({client: clientInstance}))
       .then(paypalCheckoutInstance => paypalCheckoutInstance.loadPayPalSDK({ vault: true }))
       .then((paypalCheckoutInstance) => {
