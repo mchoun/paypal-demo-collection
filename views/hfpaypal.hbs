@@ -1,0 +1,84 @@
+{{!-- <form action="/checkout" id="hosted-fields-form" method="post">
+  <label for="card-number">Card Number</label>
+  <div id="card-number"></div>
+
+  <label for="cvv">CVV</label>
+  <div id="cvv"></div>
+
+  <label for="expiration-date">Expiration Date</label>
+  <div id="expiration-date"></div>
+
+  <div id="checkout-message"></div>
+
+  <input type="submit" value="Pay" disabled />
+</form> --}}
+
+<div id="paypal-button"></div>
+
+<script>
+  (async () => {
+
+    let myDeviceData;
+
+    let clientToken = await fetch("/api/client_token")
+      .then(response => response.text())
+      .catch(error => console.log('error', error));
+
+    let btClient = braintree.client.create({
+      authorization: clientToken
+    });
+
+
+    btClient.then(clientInstance => braintree.paypalCheckout.create({client: clientInstance}))
+      .then(paypalCheckoutInstance => paypalCheckoutInstance.loadPayPalSDK({ vault: true }))
+      .then((paypalCheckoutInstance) => {
+      return paypal.Buttons({
+        fundingSource: paypal.FUNDING.PAYPAL,
+        createBillingAgreement: () => {
+          return paypalCheckoutInstance.createPayment({
+            flow: 'vault',
+            billingAgreementDescription: 'Your agreement description',
+            enableShippingAddress: true,
+            shippingAddressEditable: false,
+            shippingAddressOverride: {
+              recipientName: 'Scruff McGruff',
+              line1: '1234 Main St.',
+              line2: 'Unit 1',
+              city: 'Chicago',
+              countryCode: 'US',
+              postalCode: '60652',
+              state: 'IL',
+              phone: '123.456.7890'
+            }
+          });
+        },
+
+        onApprove: (data, actions) => {
+           paypalCheckoutInstance.tokenizePayment(data).then(payload => {
+            fetch('/api/checkout',
+              {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ "paymentMethodNonce": payload.nonce})
+              })
+              .then(result => result.json())
+              .then(result => console.log(result))
+              .catch(err => console.log(err))
+          })
+        },
+
+        onCancel: (data) => {
+          console.log('PayPal payment canceled', JSON.stringify(data, 0, 2));
+        },
+
+        onError: (err) => {
+          console.error('PayPal error', err);
+        }
+      }).render('#paypal-button');
+    }).then(() => {
+
+    }).catch(err => console.error(err));
+
+
+  })();
+</script>
