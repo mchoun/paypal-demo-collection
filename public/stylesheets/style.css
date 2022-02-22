@@ -1,37 +1,30 @@
-a {
-  color: #00B7FF;
-}
-
-* {
-  padding: 0;
-}
-
+/* Uses Bootstrap stylesheets for styling, see linked CSS*/
 body {
-  display: flex;
-  align-items: center;
-  height: 100vh;
-  padding: 2em;
-  flex-direction: column;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-
+  background-color: #fff;
+  padding: 15px;
 }
 
-hr {
-  width: 85%;
+.toast {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 9999;
 }
 
-form {
-  max-width: 800px;
-  margin: auto;
+.bootstrap-basic {
+  background: white;
 }
 
-.bt-drop-in-container {
-  width: 100%;  
-}
-.row {
-  margin-bottom: 1em;
+/* Braintree Hosted Fields styling classes*/
+.braintree-hosted-fields-focused {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.row:last-child {
-  margin-bottom: 0;
+.braintree-hosted-fields-focused.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
