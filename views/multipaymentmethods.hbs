@@ -21,7 +21,7 @@
          }))
       .then((paypalCheckoutInstance) => {
       return paypal.Buttons({
-        //fundingSource: paypal.FUNDING.PAYPAL,
+        fundingSource: paypal.FUNDING.PAYPAL,
         createOrder: () => {
           return paypalCheckoutInstance.createPayment({
             flow: 'checkout',
