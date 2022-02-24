@@ -26,4 +26,8 @@ router.get('/multipaymentmethods', function(req, res, next) {
   res.render('multipaymentmethods', { title: 'Braintree Multiple Payment Method Example', layout: 'pplayout' });
 });
 
+router.get('/googlepay', function(req, res, next) {
+  res.render('googlepay', { title: 'Braintree Google Pay Example', layout: 'pplayout' });
+});
+
 module.exports = router;
