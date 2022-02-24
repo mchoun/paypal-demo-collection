@@ -1,20 +1,29 @@
 <div id="paypal-button"></div>
+<div id="button-container"></div>
 
 <script>
   (async () => {
 
     let myDeviceData;
+    let buttonContainer = document.querySelector('#button-container');
 
     let clientToken = await fetch("/api/client_token")
       .then(response => response.text())
       .catch(error => console.log('error', error));
+    
+    const btClient = braintree.client.create({ authorization: clientToken });
+    const gPayClient = btClient.then(clientInstance => braintree.googlePayment.create(
+      {
+        client: clientInstance,
+        googlePayVersion: 2,
+        //googleMerchantId: '' omitted for TEST / Sandbox environment
+      }));
+    const ppCheckoutClient = btClient.then(clientInstance => braintree.paypalCheckout.create({ client: clientInstance }));
+    const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
 
-    let btClient = braintree.client.create({
-      authorization: clientToken
-    });
 
 
-    btClient.then(clientInstance => braintree.paypalCheckout.create({client: clientInstance}))
+    ppCheckoutClient
       .then(paypalCheckoutInstance => paypalCheckoutInstance.loadPayPalSDK({
          currency: 'USD',
          intent: 'capture' 
@@ -69,6 +78,64 @@
     }).then(() => {
 
     }).catch(err => console.error(err));
+
+gPayClient
+      .then(async googlePaymentInstance => {
+        let readyToPay = await paymentsClient.isReadyToPay({
+          apiVersion: 2,
+          apiVersionMinor: 0,
+          allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
+          existingPaymentMethodrequire: true
+        });
+
+        if (readyToPay.result) {
+
+          //TODO: Prefetch can also be used. Otherwise this information should be executed on the onClick event. Parsed out and sent to the BT server side implementation
+          const button = paymentsClient.createButton({
+            buttonColor: 'default',
+            buttonType: 'buy',
+            onClick: () => sendPaymentRequest()
+          });
+
+          buttonContainer.appendChild(button);
+
+          function sendPaymentRequest() {
+            let paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
+              transactionInfo: {
+                currencyCode: 'USD',
+                totalPriceStatus: 'FINAL',
+                totalPrice: '1.00'
+              }
+            });
+
+            let cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
+            cardPaymentMethod.parameters.billingAddressRequired = true;
+            cardPaymentMethod.parameters.billingAddressParameters = {
+              format: 'FULL',
+              phoneNumberRequired: true
+            };
+
+            paymentsClient.loadPaymentData(paymentDataRequest)
+            .then( paymentData => googlePaymentInstance.parseResponse(paymentData))
+            .then( result => {
+              fetch('/api/checkout',
+              {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ "paymentMethodNonce": result.nonce})
+              })
+              .then(result => result.json())
+              .then(result => console.log(result))
+              .catch(err => console.log(err))
+            })
+              .catch(err => console.error(err))
+          }
+
+        }
+
+      }).catch(err => console.log(err))
+
+
 
 
   })();
