@@ -11,6 +11,7 @@
       .then(response => response.text())
       .catch(error => console.log('error', error));
 
+
     //Initializing Braintree, Google Pay, and Google Pay API
     const btClient = braintree.client.create({ authorization: clientToken });
     const gPayClient = btClient.then(clientInstance => braintree.googlePayment.create(

@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const braintreeExamples = require('./routes/braintree-examples');
+const paypalExamples = require('./routes/paypal-examples');
 const apiRouter = require('./routes/api.js');
 
 var app = express();
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/braintree-examples', braintreeExamples);
+app.use('/paypal-examples', paypalExamples);
 app.use('/api', apiRouter);
 
 
