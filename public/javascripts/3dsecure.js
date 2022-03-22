@@ -86,7 +86,7 @@ function start() {
 
 function getClientToken() {
 	
-	fetch("/api/client_token")
+	fetch("/api/client-token")
     .then(response => response.text())
 	.then(clientToken => onFetchClientToken(clientToken))
     .catch(error => console.log('error', error));

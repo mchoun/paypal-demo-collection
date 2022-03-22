@@ -7,27 +7,27 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/hostedfields', function(req, res, next) {
-  res.render('hostedfields', { title: 'Braintree Hosted Fields Example', layout: 'hflayout' });
+  res.render('hostedfields', { title: 'Braintree Hosted Fields Example'});
 });
 
 router.get('/3dsecure', function(req, res, next) {
-  res.render('3dsecure', { title: 'Braintree 3D Secure Example', layout: 'layout' });
+  res.render('3dsecure', { title: 'Braintree 3D Secure Example'});
 });
 
 router.get('/paypalvault', function(req, res, next) {
-  res.render('paypalvault', { title: 'Braintree PayPal Vault Example', layout: 'pplayout' });
+  res.render('paypalvault', { title: 'Braintree PayPal Vault Example'});
 });
 
 router.get('/paypalcheckout', function(req, res, next) {
-  res.render('paypalcheckout', { title: 'Braintree PayPal Checkout Example', layout: 'pplayout' });
+  res.render('paypalcheckout', { title: 'Braintree PayPal Checkout Example'});
 });
 
 router.get('/multipaymentmethods', function(req, res, next) {
-  res.render('multipaymentmethods', { title: 'Braintree Multiple Payment Method Example', layout: 'pplayout' });
+  res.render('multipaymentmethods', { title: 'Braintree Multiple Payment Method Example'});
 });
 
 router.get('/googlepay', function(req, res, next) {
-  res.render('googlepay', { title: 'Braintree Google Pay Example', layout: 'pplayout' });
+  res.render('googlepay', { title: 'Braintree Google Pay Example'});
 });
 
 module.exports = router;
