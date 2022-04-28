@@ -33,7 +33,6 @@
       .then(paypalCheckoutInstance => paypalCheckoutInstance.loadPayPalSDK({ vault: true }))
       .then((paypalCheckoutInstance) => {
       return paypal.Buttons({
-        fundingSource: paypal.FUNDING.PAYPAL,
         createBillingAgreement: () => {
           return paypalCheckoutInstance.createPayment({
             flow: 'vault',

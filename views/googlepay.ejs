@@ -14,8 +14,92 @@
   <body>
 
 <div id="button-container"></div>
+<div id="google-pay-button"></div>
+
 
 <script>
+
+  (async () => { 
+// Make sure to have https://pay.google.com/gp/p/js/pay.js loaded on your page
+
+// You will need a button element on your page styled according to Google's brand guidelines
+// https://developers.google.com/pay/api/web/guides/brand-guidelines
+var button = document.querySelector('#google-pay-button');
+var paymentsClient = new google.payments.api.PaymentsClient({
+  environment: 'TEST' // Or 'PRODUCTION'
+});
+	
+
+    //Create client token to be used with BT client
+     let clientToken = await fetch("/api/client-token")
+      .then(response => response.text())
+      .catch(error => console.log('error', error));
+
+braintree.client.create({
+  authorization: clientToken
+}).then(function (clientInstance) {
+  return braintree.googlePayment.create({
+    client: clientInstance,
+    googlePayVersion: 2,
+  });
+}).then(function (googlePaymentInstance) {
+  console.log(googlePaymentInstance)
+  return paymentsClient.isReadyToPay({
+    // see https://developers.google.com/pay/api/web/reference/object#IsReadyToPayRequest
+    apiVersion: 2,
+    apiVersionMinor: 0,
+    allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
+    existingPaymentMethodRequired: true // Optional
+  }).then(function(response) {
+    if (response.result) {
+                const gPayButton = paymentsClient.createButton({
+            buttonColor: 'default',
+            buttonType: 'buy',
+            onClick: () => sendPaymentRequest()
+          });
+
+          button.appendChild(gPayButton);
+
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        var paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
+          transactionInfo: {
+            currencyCode: 'USD',
+            totalPriceStatus: 'FINAL',
+            totalPrice: '100.00' // Your amount
+          }
+        });
+
+        // We recommend collecting billing address information, at minimum
+        // billing postal code, and passing that billing postal code with all
+        // Google Pay card transactions as a best practice.
+        // See all available options at https://developers.google.com/pay/api/web/reference/object
+        var cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
+        cardPaymentMethod.parameters.billingAddressRequired = true;
+        cardPaymentMethod.parameters.billingAddressParameters = {
+          format: 'FULL',
+          phoneNumberRequired: true
+        };
+        debugger;
+        paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData) {
+          return googlePaymentInstance.parseResponse(paymentData);
+        }).then(function (result) {
+          // Send result.nonce to your server
+          // result.type may be either "AndroidPayCard" or "PayPalAccount", and
+          // paymentData will contain the billingAddress for card payments
+        }).catch(function (err) {
+          console.log(err)
+        });
+      });
+    }
+  });
+}).catch(function (err) {
+  console.log(err)
+});})();
+
+</script>
+<!-- <script>
   (async () => {
 
 
@@ -96,6 +180,6 @@
 
 
   })();
-</script>
+</script> -->
   </body>
 </html>
