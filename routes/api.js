@@ -13,8 +13,6 @@ router.get('/client-token', (req, res, next) => {
   // Create client token
   gateway.clientToken
     .generate({
-      customerId: '470435677',
-      merchantAccountId: 'paypal',
     })
     .then((response) => {
       res.send(response.clientToken);
@@ -77,4 +75,20 @@ router.get('/oauth', (req, res, next) => {
     res.json(url);
 });
 
+router.post('/accessToken', (req, res, next) => {
+  
+  const oauthGateway = new braintree.BraintreeGateway({
+    clientId: "client_id$sandbox$mdvf532bgwbjn4yf",
+    clientSecret: "client_secret$sandbox$c324dcd15504f0065b79f366e0086758"
+  })
+
+  const url = oauthGateway.oauth
+    .connectUrl({
+      redirectUri: 'https://www.example.com',
+      scope: 'shared_vault_transactions',
+      state: 'foo_state',
+    })
+
+    res.json(url);
+});
 module.exports = router;

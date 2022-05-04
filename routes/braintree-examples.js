@@ -30,4 +30,8 @@ router.get('/googlepay', function(req, res, next) {
   res.render('googlepay', { title: 'Braintree Google Pay Example'});
 });
 
+router.get('/drop-in-with-paylater', function(req, res, next) {
+  res.render('drop-in-with-paylater', { title: 'Braintree Drop in with Pay Later Standalone Example'});
+});
+
 module.exports = router;

@@ -23,11 +23,64 @@
         let button = document.querySelector('#submit-button');
 
         let clientToken;
+        let payLaterButton;
 
         clientToken = await fetch('/api/client-token')
           .then((response) => response.text())
           .catch((error) => console.log('error', error));
 
+        let btClient = braintree.client.create({
+          authorization: clientToken,
+        });
+
+        btClient
+          .then((clientInstance) => {
+            return braintree.paypalCheckout.create({ client: clientInstance });
+          })
+          .then((paypalCheckoutInstance) => {
+            paypalCheckoutInstance
+              .loadPayPalSDK({
+                components: 'buttons,messages',
+                currency: 'USD',
+                'enable-funding': 'paylater',
+                dataAttributes: {
+                  amount: '40.00',
+                  namespace: 'paylater',
+                },
+              })
+              .then((paypalCheckoutInstance) => {
+                return paylater.Buttons({
+                  fundingSource: paylater.FUNDING.PAYLATER,
+
+                  createOrder: () => {
+                    return paypalCheckoutInstance.createPayment({
+                      flow: 'checkout',
+                      amount: '1.00',
+                      currency: 'USD',
+                    });
+                  },
+                  onApprove: (data, actions) => {
+                    return paypalCheckoutInstance
+                      .tokenizePayment(data)
+                      .then((payload) => {
+                        fetch('/api/checkout', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            paymentMethodNonce: payload.nonce,
+                          }),
+                        })
+                          .then((result) => result.json())
+                          .then((result) => console.log(result))
+                          .catch((err) => console.log(err));
+                      });
+                  },
+                })
+                  .render('#paylater-wrapper');
+              })
+              .catch(err => console.log(err))
+          })
+          .catch((err) => console.log(err));
 
         braintree.dropin
           .create({
