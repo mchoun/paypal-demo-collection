@@ -10,6 +10,10 @@ router.get('/hostedfields', function(req, res, next) {
   res.render('hostedfields', { title: 'Braintree Hosted Fields Example'});
 });
 
+router.get('/drop-in', function(req, res, next) {
+  res.render('drop-in', { title: 'Braintree Drop in Example'});
+});
+
 router.get('/3dsecure', function(req, res, next) {
   res.render('3dsecure', { title: 'Braintree 3D Secure Example'});
 });
