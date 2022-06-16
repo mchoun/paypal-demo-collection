@@ -33,9 +33,10 @@
             // Insert your tokenization key here
             authorization: clientToken,
             container: '#dropin-container',
-            card: false,
+            vaultManager: true,
+            card: true,
             paypal: {
-              flow: 'checkout',
+              flow: 'vault',
               amount: '40.00',
               currency: 'USD',
             },
@@ -43,7 +44,12 @@
               allowDesktop: true,
             },
             googlePay: {
-              merchantId: '800000000800',
+              // merchantId: '800000000800',
+              transactionInfo: {
+                totalPriceStatus: 'FINAL',
+                totalPrice: '1.00',
+                currencyCode: 'USD'
+              }
             },
             applePay: {
               displayName: 'Mervin Store',

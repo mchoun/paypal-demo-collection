@@ -1,13 +1,20 @@
-var express = require('express');
-var router = express.Router();
+const paypal =  require('./scripts/paypal-api.js')
+const express = require('express');
+const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Braintree Drop-in Example' });
+const base = 'https://api-m.sandbox.paypal.com';
+const { CLIENT_ID, APP_SECRET } = process.env;
+
+
+router.get('/checkout-advance', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateClientToken();
+  res.render('checkoutadvance', { clientId, clientToken });
 });
 
 router.get('/subscriptions', function(req, res, next) {
   res.render('subscriptions', { title: 'PayPal Subscription Button Example', layout: 'hflayout' });
 });
+
 
 module.exports = router;

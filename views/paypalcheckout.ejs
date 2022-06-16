@@ -37,19 +37,20 @@
             paypalCheckoutInstance.loadPayPalSDK({
               currency: 'USD',
               intent: 'capture',
+              'enable-funding': 'venmo',
+              'disable-funding': 'card',
             })
           )
           .then((paypalCheckoutInstance) => {
             return paypal
               .Buttons({
-                fundingSource: paypal.FUNDING.PAYPAL,
                 createOrder: () => {
                   let response = paypalCheckoutInstance.createPayment({
                     flow: 'checkout',
                     amount: 1.0,
                     currency: 'USD',
                     intent: 'capture',
-                    // requestBillingAgreement: true,
+                    requestBillingAgreement: true,
                     enableShippingAddress: true,
                     shippingAddressEditable: false,
                     shippingAddressOverride: {
@@ -73,6 +74,7 @@
                   paypalCheckoutInstance
                     .tokenizePayment(data)
                     .then((payload) => {
+                      console.log(payload);
                       fetch('/api/checkout', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
