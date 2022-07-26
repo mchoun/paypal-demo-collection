@@ -26,6 +26,10 @@ router.get('/paypalcheckout', function(req, res, next) {
   res.render('paypalcheckout', { title: 'Braintree PayPal Checkout Example'});
 });
 
+router.get('/paypalcheckoutvault', function(req, res, next) {
+  res.render('paypalcheckoutvault', { title: 'Braintree PayPal Checkout with Vault Example'});
+});
+
 router.get('/multipaymentmethods', function(req, res, next) {
   res.render('multipaymentmethods', { title: 'Braintree Multiple Payment Method Example'});
 });

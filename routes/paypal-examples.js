@@ -16,5 +16,10 @@ router.get('/subscriptions', function(req, res, next) {
   res.render('subscriptions', { title: 'PayPal Subscription Button Example', layout: 'hflayout' });
 });
 
+router.get('/standalone', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateAccessToken();
+  res.render('pp-standalone', { title: 'Standalone button example', clientId, clientToken});
+});
 
 module.exports = router;

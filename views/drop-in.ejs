@@ -31,12 +31,10 @@
         braintree.dropin
           .create({
             // Insert your tokenization key here
-            authorization: clientToken,
+            authorization: "sandbox_v2jfkq6z_zxwjpt2w8t8yfjcq",
             container: '#dropin-container',
-            vaultManager: true,
-            card: true,
             paypal: {
-              flow: 'vault',
+              flow: 'checkout',
               amount: '40.00',
               currency: 'USD',
             },

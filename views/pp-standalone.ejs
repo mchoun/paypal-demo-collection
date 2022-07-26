@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
+    />
+    <script
+      src="https://www.paypal.com/sdk/js?components=buttons,hosted-fields,funding-eligibility&client-id=<%= clientId %>"
+    ></script>
+  </head>
+  <body>
+	<div id="paypal-button-container" class="paypal-button-container"></div>
+
+<script>
+  // const FUNDING_SOURCES = [
+  //   paypal.FUNDING.PAYPAL,
+  //   paypal.FUNDING.VENMO,
+  //   paypal.FUNDING.PAYLATER,
+  //   ]
+
+    // paypal.getFundingSources().forEach( (fundingSource) => {
+    //   console.log(fundingSource);
+    //   let button = paypal.Buttons({
+    //     fundingSource: fundingSource,
+    //   })
+
+
+    //   if ( button.isEligible()) {
+    //     button.render('#paypal-button-container')
+    //   }
+    // })
+
+// Loop over each funding source/payment method
+paypal.getFundingSources().forEach(function (fundingSource) {
+console.log(fundingSource)
+  // Initialize the buttons
+var button = paypal.Buttons({
+fundingSource: fundingSource,
+})
+// Check if the button is eligible
+if (button.isEligible()) {
+// Render the standalone button for that funding source
+button.render('#paypal-button-container')
+}
+})
+</script>
+  </body>
+</html>

@@ -29,13 +29,16 @@
           .then((clientInstance) =>{ 
             return braintree.paypalCheckout.create({
               client: clientInstance,
+              autoSetDatauserIdToken: true
             })
-
+            console.log(clientInstance)
       })
           .then((paypalCheckoutInstance) =>{
             return paypalCheckoutInstance.loadPayPalSDK({
               currency: 'USD',
               intent: 'capture',
+              'enable-funding': 'paylater',
+              'disable-funding': 'card',
             })
           }
           )
@@ -46,8 +49,9 @@
                   let response = paypalCheckoutInstance.createPayment({
                     flow: 'checkout',
                     intent: 'capture',
-                    amount: 50.00,
+                    amount: 200.00,
                     currency: 'USD',
+                    requestBillingAgreement: true,
                   });
                   return response;
                   console.log('createOrder');
