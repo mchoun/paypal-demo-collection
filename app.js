@@ -11,10 +11,16 @@ const paypalExamples = require('./routes/paypal-examples');
 const apiRouter = require('./routes/api.js');
 const graphql = require("./routes/graphql.js")
 
+const viewsPath = path.join(__dirname, 'views')
+const viewsPathArray = [
+  `${viewsPath}/braintree`,
+  `${viewsPath}/paypal`,
+]
+
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', viewsPathArray);
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
