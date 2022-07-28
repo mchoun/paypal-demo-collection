@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
+    />
+    <script src="https://www.paypal.com/sdk/js?client-id=<%= clientId %>"></script>
+  </head>
+  <body>
+    <div id="inline-checkout-container" class="container"></div>
+
+    <script>
+      paypal
+        .Buttons({
+          style: {
+            custom: {
+              label: 'Proceed to checkout',
+              // css: {
+              //   background: '#efefef url(“logo.svg”) no-repeat fixed center',
+              //   border: '1px solid #333',
+              //   'border-radius': '8px',
+              //   'max-height': '44px',
+              //   'line-height': '44px',
+              //   padding: '10px',
+              // },
+            },
+          },
+          createOrder: createOrder,
+          onShippingAddressChange: onShippingAddressChange,
+          onShippingOptionChange: onShippingOptionChange,
+          onApprove: onApprove,
+          onComplete: onComplete,
+          // onError: onError,
+        })
+        .render('#inline-checkout-container');
+
+      async function createOrder(data, actions) {
+        return fetch('/api/orders', {
+          method: 'post',
+        })
+          .then((response) => response.json())
+          .then((order) => order.id);
+      };
+
+      async function onShippingAddressChange(data, actions) {};
+
+      async function onShippingOptionChange(data, actions) {};
+
+      async function onApprove(data, actions) {
+        return fetch(`/api/orders/${data.orderID}/capture`, {
+          method: 'post',
+        })
+          .then((response) => response.json())
+          .then((orderData) => {
+            console.log(
+              'Capture result',
+              orderData,
+              JSON.stringify(orderData, null, 2)
+            );
+            var transaction = orderData.purchase_units[0].payments.captures[0];
+            alert(`Transaction ${transaction.status}: ${transaction.id}
+
+            See console for all available details
+          `);
+          });
+      }
+      async function onComplete(data, actions) {};
+
+      async function onError(data, actions) {};
+      
+    </script>
+  </body>
+</html>
