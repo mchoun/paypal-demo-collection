@@ -12,6 +12,12 @@ router.get('/checkout-advance', async function(req, res, next) {
   res.render('checkoutadvance', { clientId, clientToken });
 });
 
+router.get('/checkout-standard', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateClientToken();
+  res.render('checkoutstandard', { clientId, clientToken });
+});
+
 router.get('/subscriptions', function(req, res, next) {
   res.render('subscriptions', { title: 'PayPal Subscription Button Example', layout: 'hflayout' });
 });

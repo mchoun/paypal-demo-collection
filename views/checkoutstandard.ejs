@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
+    />
+    <script
+      src="https://www.paypal.com/sdk/js?components=buttons&client-id=<%= clientId %>"
+      data-client-token="<%= clientToken %>"
+    ></script>
+  </head>
+  <body>
+    <div id="paypal-button-container" class="paypal-button-container"></div>
+
+    <script>
+      paypal
+        .Buttons({
+          style: {
+            layout: 'vertical',
+          },
+          createOrder: createOrder,
+          onApprove: onApprove,
+          onCancel: onCancel,
+          onError: onError,
+        })
+        .render('#paypal-button-container');
+
+      async function createOrder(data, actions) {
+        let response = await actions.order.create({
+          intent: 'CAPTURE',
+          purchase_units: [
+            {
+              amount: {
+                currency_code: 'USD',
+                value: '1.00',
+              },
+            },
+          ],
+        });
+        console.log(response);
+        return response;
+      }
+
+      async function onApprove(data, actions) {
+        console.table(data);
+        return actions.order
+          .capture()
+          .then((details) => {
+            console.log(details);
+          })
+          .catch((err) => console.log(err));
+      }
+
+      async function onCancel(data) {
+        console.log(data);
+      }
+
+      async function onError(error) {
+        console.log(error);
+      }
+
+
+    </script>
+  </body>
+</html>
