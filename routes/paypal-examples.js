@@ -22,4 +22,9 @@ router.get('/standalone', async function(req, res, next) {
   res.render('pp-standalone', { title: 'Standalone button example', clientId, clientToken});
 });
 
+router.get('/accelerated-checkout', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateAccessToken();
+  res.render('accelerated-checkout', { title: 'Accelerated Checkout Example', clientId, clientToken});
+});
 module.exports = router;
