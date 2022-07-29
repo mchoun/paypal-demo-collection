@@ -9,17 +9,14 @@ var indexRouter = require('./routes/index');
 const braintreeExamples = require('./routes/braintree-examples');
 const paypalExamples = require('./routes/paypal-examples');
 const apiRouter = require('./routes/api.js');
-const graphql = require("./routes/graphql.js")
-
-const viewsPath = path.join(__dirname, 'views')
-const viewsPathArray = [
-  `${viewsPath}/braintree`,
-  `${viewsPath}/paypal`,
-]
+const graphql = require('./routes/graphql.js');
 
 var app = express();
 
 // view engine setup
+const viewsPath = path.join(__dirname, 'views');
+const viewsPathArray = [viewsPath, `${viewsPath}/braintree`, `${viewsPath}/paypal`];
+
 app.set('views', viewsPathArray);
 app.set('view engine', 'ejs');
 
@@ -37,12 +34,12 @@ app.use('/api', apiRouter);
 app.use('/graqhql', graphql);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -51,10 +48,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
-
-
 
 module.exports = app;
