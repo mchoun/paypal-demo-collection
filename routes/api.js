@@ -49,7 +49,7 @@ router.post('/checkout', (req, res, next) => {
       options: {
         //This option request the funds from the transaction once it has been auhtorized successfully
         submitForSettlement: true,
-        storeInVaultOnSuccess: true,
+        // storeInVaultOnSuccess: true,
       },
       purchaseOrderNumber: '12345',
       taxAmount: '5.00',
@@ -196,5 +196,19 @@ router.post('/orders/:orderID/capture', async (req, res) => {
   const captureData = await paypal.capturePayment(orderID);
   res.json(captureData);
 });
+
+
+router.post('/clone', async (req, res) => {
+  const { transactionId } = req.body;
+  let response = await gateway.transaction.cloneTransaction(transactionId, {
+    amount: '10.00',
+    options: {
+      submitForSettlement: true
+    }
+  })
+
+  res.send(response)
+})
+
 
 module.exports = router;
