@@ -20,22 +20,14 @@
           style: {
             custom: {
               label: 'Proceed to checkout',
-              // css: {
-              //   background: '#efefef url(“logo.svg”) no-repeat fixed center',
-              //   border: '1px solid #333',
-              //   'border-radius': '8px',
-              //   'max-height': '44px',
-              //   'line-height': '44px',
-              //   padding: '10px',
-              // },
             },
           },
-          createOrder: createOrder,
-          onShippingAddressChange: onShippingAddressChange,
-          onShippingOptionChange: onShippingOptionChange,
-          onApprove: onApprove,
-          onComplete: onComplete,
-          // onError: onError,
+          createOrder,
+          onShippingAddressChange,
+          onShippingOptionChange,
+          onApprove,
+          onComplete,
+          onError,
         })
         .render('#inline-checkout-container');
 
@@ -69,6 +61,7 @@
           `);
           });
       }
+
       async function onComplete(data, actions) {};
 
       async function onError(data, actions) {};

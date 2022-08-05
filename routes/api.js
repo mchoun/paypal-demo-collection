@@ -10,8 +10,6 @@ const gateway = new braintree.BraintreeGateway({
   merchantId: MERCHANT_ID,
   publicKey: BT_PUBLIC_KEY,
   privateKey: BT_PRIVATE_KEY,
-  // publicKey: "yk5gd3b2m4x29c43",
-  // privateKey: "3df1c791e53b9291093a6d17d0ff469e",
 });
 
 router.get('/client-token', (req, res, next) => {
