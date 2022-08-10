@@ -20,9 +20,8 @@
       (async () => {
         let button = document.querySelector('#submit-button');
 
-        let clientToken;
 
-        clientToken = await fetch('/api/client-token')
+        let clientToken = await fetch('/api/client-token')
           .then((response) => response.text())
           .catch((error) => console.log('error', error));
 
@@ -30,7 +29,7 @@
         braintree.dropin
           .create({
             // Insert your tokenization key here
-            authorization: "sandbox_v2jfkq6z_zxwjpt2w8t8yfjcq",
+            authorization: clientToken,
             container: '#dropin-container',
             paypal: {
               flow: 'checkout',
@@ -63,6 +62,7 @@
               dropinInstance
                 .requestPaymentMethod()
                 .then(function (payload) {
+                  console.log(payload)
                   // When the user clicks on the 'Submit payment' button this code will send the
                   // encrypted payment information in a variable called a payment method nonce
                   fetch('/api/checkout', {

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+
+    <script src="https://js.braintreegateway.com/web/dropin/1.32.1/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.85.2/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.85.2/js/hosted-fields.min.js"></script>
+
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="/public/stylesheets/style.css" />
+    <!-- includes jQuery -->
+  </head>
+  <body>
+    <div id="dropin-wrapper">
+      <div id="checkout-message"></div>
+      <div id="dropin-container"></div>
+      <button id="submit-button">Submit payment</button>
+    </div>
+
+    <script
+      src="http://code.jquery.com/jquery-3.2.1.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <div class="container-sm">
+      <form
+        action="/checkout"
+        id="hosted-fields-form"
+        method="post"
+        class="bootstrap-basic"
+      >
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <label for="cc-name">Cardholder Name</label>
+            <div class="form-control" id="cc-name"></div>
+            <small class="text-muted">Full name as displayed on card</small>
+            <div class="invalid-feedback">Name on card is required</div>
+          </div>
+          <div class="col-sm-6 mb-3">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="you@example.com"
+            />
+            <div class="invalid-feedback">
+              Please enter a valid email address for shipping updates.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6 mb-3">
+            <label for="cc-number">Credit card number</label>
+            <div class="form-control" id="card-number"></div>
+            <div class="invalid-feedback">Credit card number is required</div>
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="cc-expiration">Expiration</label>
+            <div class="form-control" id="card-expiration"></div>
+            <div class="invalid-feedback">Expiration date required</div>
+          </div>
+          <div class="col-sm-3 mb-3">
+            <label for="cc-expiration">CVV</label>
+            <div class="form-control" id="card-cvv"></div>
+            <div class="invalid-feedback">Security code required</div>
+          </div>
+        </div>
+
+        <div id="checkout-message"></div>
+        <input type="submit" value="Pay" disabled />
+      </form>
+    </div>
+    <script>
+      (async () => {
+        let button = document.querySelector('#submit-button');
+        let form = document.querySelector('#hosted-fields-form');
+        let submit = document.querySelector('input[type="submit"]');
+
+        let clientToken = await fetch('/api/client-token')
+          .then((response) => response.text())
+          .catch((error) => console.log('error', error));
+
+        braintree.dropin
+          .create({
+            // Insert your tokenization key here
+            authorization: clientToken,
+            container: '#dropin-container',
+            paypal: {
+              flow: 'checkout',
+              amount: '40.00',
+              currency: 'USD',
+            },
+            venmo: {
+              allowDesktop: true,
+            },
+            googlePay: {
+              // merchantId: '800000000800',
+              transactionInfo: {
+                totalPriceStatus: 'FINAL',
+                totalPrice: '1.00',
+                currencyCode: 'USD',
+              },
+            },
+            applePay: {
+              displayName: 'Mervin Store',
+              paymentRequest: {
+                total: {
+                  label: 'Mervin Store',
+                  amount: '1.00',
+                },
+              },
+            },
+          })
+          .then(function (dropinInstance) {
+            button.addEventListener('click', function () {
+              dropinInstance
+                .requestPaymentMethod()
+                .then(function (payload) {
+                  // When the user clicks on the 'Submit payment' button this code will send the
+                  // encrypted payment information in a variable called a payment method nonce
+                  fetch('/api/checkout', {
+                    method: 'POST',
+                    body: { paymentMethodNonce: payload.nonce },
+                  }).then(function (result) {
+                    // Tear down the Drop-in UI
+                    dropinInstance.teardown(function (teardownErr) {
+                      if (teardownErr) {
+                        console.error('Could not tear down Drop-in UI!');
+                      } else {
+                        console.info('Drop-in UI has been torn down!');
+                        // Remove the 'Submit payment' button
+                        $('#submit-button').remove();
+                      }
+                    });
+
+                    if (result.ok) {
+                      result.json().then((response) => console.log(response));
+                      $('#checkout-message').html(
+                        '<h1>Success</h1><p>Your Drop-in UI is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>'
+                      );
+                    } else {
+                      console.log(result);
+                      $('#checkout-message').html(
+                        '<h1>Error</h1><p>Check your console.</p>'
+                      );
+                    }
+                  });
+                })
+                .catch(function (err) {
+                  console.error(err);
+                });
+            });
+          })
+          .catch(function (err) {
+            console.error(err);
+          });
+
+        braintree.client.create(
+          {
+            // Insert your tokenization key here
+            authorization: clientToken,
+          },
+          function (clientErr, clientInstance) {
+            if (clientErr) {
+              console.error(clientErr);
+              return;
+            }
+
+            // Create a hostedFields component to initialize the form
+
+            braintree.hostedFields.create(
+              {
+                client: clientInstance,
+                // Customize the Hosted Fields.
+                // More information can be found at:
+                // https://developers.braintreepayments.com/guides/hosted-fields/styling/javascript/v3
+                styles: {
+                  input: {
+                    'font-size': '14px',
+                  },
+                  'input.invalid': {
+                    color: 'red',
+                  },
+                  'input.valid': {
+                    color: 'green',
+                  },
+                },
+                // Configure which fields in your card form will be generated by Hosted Fields instead
+                fields: {
+                  cardholderName: {
+                    selector: '#cc-name',
+                    placeholder: 'Name as it appears on your card',
+                  },
+                  number: {
+                    container: '#card-number',
+                    placeholder: '4111 1111 1111 1111',
+                  },
+                  cvv: {
+                    container: '#card-cvv',
+                    placeholder: '123',
+                  },
+                  expirationDate: {
+                    container: '#card-expiration',
+                    placeholder: '10/2022',
+                  },
+                },
+              },
+              function (hostedFieldsErr, instance) {
+                if (hostedFieldsErr) {
+                  console.error(hostedFieldsErr);
+                  return;
+                }
+
+                // Once the fields are initialized enable the submit button
+                submit.removeAttribute('disabled');
+
+                // Initialize the form submit event
+                form.addEventListener(
+                  'submit',
+                  function (event) {
+                    event.preventDefault();
+                    // When the user clicks on the 'Submit payment' button this code will send the
+                    // encrypted payment information in a variable called a payment method nonce
+                    instance.tokenize(function (tokenizeErr, payload) {
+                      if (tokenizeErr) {
+                        console.error(tokenizeErr);
+                        return;
+                      }
+
+                      $.ajax({
+                        type: 'POST',
+                        url: '/api/checkout',
+                        data: { paymentMethodNonce: payload.nonce },
+                      }).done(function (result) {
+                        // Since the following code will overwrite the contents of
+                        // your page with a success or error message, first teardown
+                        // the Hosted Fields form to remove any extra event listeners
+                        // and iframes that the Braintree SDK added to your page
+                        instance.teardown(function (teardownErr) {
+                          if (teardownErr) {
+                            console.error(
+                              'Could not tear down the Hosted Fields form!'
+                            );
+                          } else {
+                            console.info(
+                              'Hosted Fields form has been torn down!'
+                            );
+                            // Remove the 'Submit payment' button
+                            $('#hosted-fields-form').remove();
+                          }
+                        });
+
+                        if (result.success) {
+                          $('#checkout-message').html(
+                            '<h1>Success</h1><p>Your Hosted Fields form is working! Check your <a href="https://sandbox.braintreegateway.com/login">sandbox Control Panel</a> for your test transactions.</p><p>Refresh to try another transaction.</p>'
+                          );
+                        } else {
+                          $('#checkout-message').html(
+                            '<h1>Error</h1><p>Check your console.</p>'
+                          );
+                        }
+                      });
+                    });
+                  },
+                  false
+                );
+              }
+            );
+          }
+        );
+      })();
+    </script>
+  </body>
+</html>
