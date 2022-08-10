@@ -42,4 +42,7 @@ router.get('/drop-in-with-paylater', function(req, res, next) {
   res.render('drop-in-with-paylater', { title: 'Braintree Drop in with Pay Later Standalone Example'});
 });
 
+router.get('/drop-in-with-hostedfields', function(req, res, next) {
+  res.render('drop-in-with-hostedfields', { title: 'Braintree Drop in with Hosted Fields Example'});
+});
 module.exports = router;
