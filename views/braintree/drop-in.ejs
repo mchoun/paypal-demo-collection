@@ -20,11 +20,9 @@
       (async () => {
         let button = document.querySelector('#submit-button');
 
-
         let clientToken = await fetch('/api/client-token')
           .then((response) => response.text())
           .catch((error) => console.log('error', error));
-
 
         braintree.dropin
           .create({
@@ -44,8 +42,8 @@
               transactionInfo: {
                 totalPriceStatus: 'FINAL',
                 totalPrice: '1.00',
-                currencyCode: 'USD'
-              }
+                currencyCode: 'USD',
+              },
             },
             applePay: {
               displayName: 'Mervin Store',
@@ -62,12 +60,13 @@
               dropinInstance
                 .requestPaymentMethod()
                 .then(function (payload) {
-                  console.log(payload)
+                  console.log(payload);
                   // When the user clicks on the 'Submit payment' button this code will send the
                   // encrypted payment information in a variable called a payment method nonce
                   fetch('/api/checkout', {
                     method: 'POST',
-                    body: { paymentMethodNonce: payload.nonce },
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paymentMethodNonce: payload.nonce }),
                   }).then(function (result) {
                     // Tear down the Drop-in UI
                     dropinInstance.teardown(function (teardownErr) {
