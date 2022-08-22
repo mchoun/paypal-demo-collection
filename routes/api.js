@@ -115,6 +115,28 @@ router.post('/capture', (req, res, next) => {
     });
 });
 
+router.post('/transaction-find', (req, res) => {
+  const { transactionId } = req.body;
+  
+  gateway.transaction.find(transactionId)
+    .then( (result) => res.json(result))
+    .catch( (err) => {
+      console.log(err);
+      res.status(500).send('Something went wrong');
+    })
+})
+
+router.post('/refund', (req, res) => {
+  const { transactionId, amount } = req.body;
+  
+  gateway.transaction.refund(transactionId, amount)
+    .then( (result) => res.json(result))
+    .catch( (err) => {
+      console.log(err);
+      res.status(500).send('Something went wrong');
+    })
+})
+
 router.post('/customer-create', (req, res, next) => {
   const { id, paymentMethodNonce } = req.body;
 

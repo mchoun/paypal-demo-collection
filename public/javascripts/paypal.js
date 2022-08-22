@@ -1,3 +1,8 @@
+let cardForm = document.querySelector('#card-form');
+let cardholderName = document.querySelector('#card-holder-name');
+let countryCodeAlpha2 = document.querySelector('#card-billing-address-country');
+let vaultCheckbox = document.querySelector('#save');
+
 paypal
   .Buttons({
     createOrder: (data, actions) => {
@@ -66,27 +71,15 @@ if (paypal.HostedFields.isEligible()) {
       },
     },
   }).then((cardFields) => {
-    document.querySelector('#card-form').addEventListener('submit', (event) => {
+    cardForm.addEventListener('submit', (event) => {
       event.preventDefault();
       cardFields
         .submit({
-          cardholderName: document.getElementById('card-holder-name').value,
+          cardholderName: cardholderName.value,
           billingAddress: {
-            // streetAddress: document.getElementById(
-            //   'card-billing-address-street'
-            // ).value,
-            // extendedAddress: document.getElementById(
-            //   'card-billing-address-unit'
-            // ).value,
-            // region: document.getElementById('card-billing-address-state').value,
-            // locality: document.getElementById('card-billing-address-city')
-            //   .value,
-            // postalCode: document.getElementById('card-billing-address-zip')
-            //   .value,
-            countryCodeAlpha2: document.getElementById(
-              'card-billing-address-country'
-            ).value,
+            countryCodeAlpha2: countryCodeAlpha2.value,
           },
+          vault: vaultCheckbox.checked,
         })
         .then(() => {
           fetch(`/api/orders/${orderId}/capture`, {

@@ -49,6 +49,20 @@ const createOrder = async () =>  {
           },
         },
       ],
+        payment_source: {
+          card: {
+            name: "John Doe",
+            billing_address: {
+              country_code: "US",
+            },
+            attributes: {
+              vault: {
+                store_in_vault: "ON_SUCCESS"
+              }
+            }
+            
+          }
+        }
     }),
   });
   const data = await response.json();
