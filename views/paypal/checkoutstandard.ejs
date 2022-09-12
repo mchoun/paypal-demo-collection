@@ -10,7 +10,7 @@
       href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
     />
     <script
-      src="https://www.paypal.com/sdk/js?components=buttons&client-id=<%= clientId %>"
+      src="https://www.paypal.com/sdk/js?components=buttons&client-id=<%= clientId %>&commit=false"
       data-client-token="<%= clientToken %>"
     ></script>
   </head>
@@ -24,6 +24,7 @@
             layout: 'vertical',
           },
           createOrder: createOrder,
+          onShippingChange: onShippingChange,
           onApprove: onApprove,
           onCancel: onCancel,
           onError: onError,
@@ -39,6 +40,7 @@
                 currency_code: 'USD',
                 value: '1.00',
               },
+              
             },
           ],
         });
@@ -46,8 +48,15 @@
         return response;
       }
 
+      async function onShippingChange(data, actions) { 
+        console.log( `Selected Option: ${JSON.stringify(data.shipping_address)}`)
+        console.log('This is a test!')
+        console.log(actions)
+        console.log(actions.order.get())
+      }
+
       async function onApprove(data, actions) {
-        console.table(data);
+        console.table(actions);
         return actions.order
           .capture()
           .then((details) => {

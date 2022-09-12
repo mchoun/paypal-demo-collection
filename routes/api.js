@@ -141,20 +141,7 @@ router.post('/customer-create', (req, res, next) => {
   const { id, paymentMethodNonce } = req.body;
 
   gateway.customer
-    .create({
-      paymentMethodNonce: paymentMethodNonce,
-      id: id
-      // firstName: 'First',
-      // lastName: 'Last',
-      // creditCard: {
-      //   options: {
-      //     verifyCard: true,
-      //   },
-      //   cvv: '123',
-      //   expirationDate: '01/25',
-      //   number: '4111111111111111',
-      // },
-    })
+    .create(req.body)
     .then((result) => res.json(result))
     .catch((err) => res.status(500).send(err));
 });
