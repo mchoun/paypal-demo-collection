@@ -45,41 +45,13 @@ router.post('/checkout', (req, res, next) => {
   gateway.transaction.sale(
     {
       amount: '1.00',
-      paymentMethodNonce: nonceFromTheClient,
+      paymentMethodToken: nonceFromTheClient,
       options: {
         //This option request the funds from the transaction once it has been auhtorized successfully
         submitForSettlement: true,
         // storeInVaultOnSuccess: true,
       },
-      purchaseOrderNumber: '12345',
-      taxAmount: '5.00',
-      shippingAmount: '1.00',
-      discountAmount: '0.00',
-      shipsFromPostalCode: '60654',
-      shipping: {
-        firstName: 'Clinton',
-        lastName: 'Ecker',
-        streetAddress: '1234 Main Street',
-        extendedAddress: 'Unit 222',
-        locality: 'Chicago',
-        region: 'IL',
-        postalCode: '60654',
-        countryCodeAlpha3: 'USA',
-      },
-      lineItems: [
-        {
-          name: 'Product',
-          kind: 'debit',
-          quantity: '10.0000',
-          unitAmount: '9.5000',
-          unitOfMeasure: 'unit',
-          totalAmount: '95.0000',
-          taxAmount: '5.00',
-          discountAmount: '0.00',
-          productCode: '54321',
-          commodityCode: '98765',
-        },
-      ],
+     
     },
     (error, result) => {
       if (result) {
@@ -145,6 +117,16 @@ router.post('/customer-create', (req, res, next) => {
     .then((result) => res.json(result))
     .catch((err) => res.status(500).send(err));
 });
+
+router.post('/customer-find', (req, res, next) => {
+  const { id } = req.body;
+
+  gateway.customer
+    .find(id)
+    .then((result) => res.json(result))
+    .catch((err) => res.status(500).send(err));
+});
+
 
 router.post('/payment-method', (req, res) => {
   const { customerId, paymentMethodNonce } = req.body;

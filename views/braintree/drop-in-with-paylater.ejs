@@ -18,6 +18,14 @@
     </div>
 
     <div id="paylater-wrapper"></div>
+    <div
+    data-pp-message
+    data-pp-layout="text"
+    data-pp-text-color="black"
+    data-pp-logo-type="inline"
+    data-pp-amount="89.99"
+    ></div>
+
     <script>
       (async () => {
         let button = document.querySelector('#submit-button');
@@ -89,7 +97,7 @@
             container: '#dropin-container',
             card: false,
             paypal: {
-              flow: 'checkout',
+              flow: 'vault',
               amount: '40.00',
               currency: 'USD',
             },

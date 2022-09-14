@@ -9,45 +9,50 @@
       type="text/css"
       href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
     />
-    <script
-      src="https://www.paypal.com/sdk/js?components=buttons,hosted-fields,funding-eligibility&client-id=<%= clientId %>"
-    ></script>
+    <script src="https://www.paypal.com/sdk/js?components=buttons,hosted-fields,funding-eligibility,messages&client-id=AdKkzX_I0CJKpGXZcquenx7fgMyeSBezpgFUHuW4KJRNVaW4IxWkLvTQWO66_4KuxOSJD3X0pUpEfPBy"></script>
   </head>
   <body>
-	<div id="paypal-button-container" class="paypal-button-container"></div>
+    <div id="paypal-button-container" class="paypal-button-container"></div>
 
-<script>
-  // const FUNDING_SOURCES = [
-  //   paypal.FUNDING.PAYPAL,
-  //   paypal.FUNDING.VENMO,
-  //   paypal.FUNDING.PAYLATER,
-  //   ]
+    <div
+      data-pp-message
+      data-pp-layout="text"
+      data-pp-text-color="black"
+      data-pp-logo-type="inline"
+      data-pp-amount="89.99"
+    ></div>
 
-    // paypal.getFundingSources().forEach( (fundingSource) => {
-    //   console.log(fundingSource);
-    //   let button = paypal.Buttons({
-    //     fundingSource: fundingSource,
-    //   })
+    <script>
+      // const FUNDING_SOURCES = [
+      //   paypal.FUNDING.PAYPAL,
+      //   paypal.FUNDING.VENMO,
+      //   paypal.FUNDING.PAYLATER,
+      //   ]
 
+      // paypal.getFundingSources().forEach( (fundingSource) => {
+      //   console.log(fundingSource);
+      //   let button = paypal.Buttons({
+      //     fundingSource: fundingSource,
+      //   })
 
-    //   if ( button.isEligible()) {
-    //     button.render('#paypal-button-container')
-    //   }
-    // })
+      //   if ( button.isEligible()) {
+      //     button.render('#paypal-button-container')
+      //   }
+      // })
 
-// Loop over each funding source/payment method
-paypal.getFundingSources().forEach(function (fundingSource) {
-console.log(fundingSource)
-  // Initialize the buttons
-var button = paypal.Buttons({
-fundingSource: fundingSource,
-})
-// Check if the button is eligible
-if (button.isEligible()) {
-// Render the standalone button for that funding source
-button.render('#paypal-button-container')
-}
-})
-</script>
+      // Loop over each funding source/payment method
+      paypal.getFundingSources().forEach(function (fundingSource) {
+        console.log(fundingSource);
+        // Initialize the buttons
+        var button = paypal.Buttons({
+          fundingSource: fundingSource,
+        });
+        // Check if the button is eligible
+        if (button.isEligible()) {
+          // Render the standalone button for that funding source
+          button.render('#paypal-button-container');
+        }
+      });
+    </script>
   </body>
 </html>
