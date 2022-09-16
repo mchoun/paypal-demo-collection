@@ -33,4 +33,13 @@ router.get('/accelerated-checkout', async function(req, res, next) {
   const clientToken = await paypal.generateAccessToken();
   res.render('accelerated-checkout', { title: 'Accelerated Checkout Example', clientId, clientToken});
 });
+
+
+router.get('/venmo', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateAccessToken();
+  res.render('venmo', { title: 'Venmo example with Vault', clientId, clientToken});
+});
+
+
 module.exports = router;

@@ -45,7 +45,7 @@ router.post('/checkout', (req, res, next) => {
   gateway.transaction.sale(
     {
       amount: '1.00',
-      paymentMethodToken: nonceFromTheClient,
+      paymentMethodNonce: nonceFromTheClient,
       options: {
         //This option request the funds from the transaction once it has been auhtorized successfully
         submitForSettlement: true,
