@@ -15,18 +15,12 @@
     <div id="venmo-button-container" class="venmo-button-container"></div>
 
     <script>
-      paypal.getFundingSources().forEach(function (fundingSource) {
-        console.log(fundingSource);
-        // Initialize the buttons
-        var button = paypal.Buttons({
-          fundingSource: fundingSource,
-        });
-        // Check if the button is eligible
-        if (button.isEligible()) {
-          // Render the standalone button for that funding source
-          button.render('#paypal-button-container');
-        }
-      });
+    paypal.Buttons({
+      createOrder,
+      onApprove,
+      onCancel,
+      onError
+    })
     </script>
   </body>
 </html>

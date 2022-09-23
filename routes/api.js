@@ -28,7 +28,7 @@ router.get('/client-token-customer', (req, res, next) => {
   // Create client token
   gateway.clientToken
     .generate({
-      customerId: "pp-test"
+      customerId: "153080992"
     })
     .then((response) => {
       res.send(response.clientToken);
@@ -46,6 +46,7 @@ router.post('/checkout', (req, res, next) => {
     {
       amount: '1.00',
       paymentMethodNonce: nonceFromTheClient,
+      
       options: {
         //This option request the funds from the transaction once it has been auhtorized successfully
         submitForSettlement: true,
@@ -108,6 +109,15 @@ router.post('/refund', (req, res) => {
       res.status(500).send('Something went wrong');
     })
 })
+
+router.post('/customer-update', (req, res, next) => {
+  const { id, ...restOfBody } = req.body;
+
+  gateway.customer
+    .update(id, restOfBody )
+    .then((result) => res.json(result))
+    .catch((err) => res.status(500).send(err));
+});
 
 router.post('/customer-create', (req, res, next) => {
   const { id, paymentMethodNonce } = req.body;
