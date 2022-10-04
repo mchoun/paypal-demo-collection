@@ -39,29 +39,14 @@ router.get('/client-token-customer', (req, res, next) => {
 });
 
 router.post('/checkout', (req, res, next) => {
-  // Use the payment method nonce here
-  const nonceFromTheClient = req.body.paymentMethodNonce;
-  // Create a new transaction for $10
+  //TODO: Create logic for the client side integration to pass default parameters if only a nonce is sent to this endpoint
+  // const nonceFromTheClient = req.body.paymentMethodNonce;
+  
   gateway.transaction.sale(
-    {
-      amount: '1.00',
-      paymentMethodNonce: nonceFromTheClient,
-      
-      options: {
-        //This option request the funds from the transaction once it has been auhtorized successfully
-        submitForSettlement: true,
-        // storeInVaultOnSuccess: true,
-      },
-     
-    },
-    (error, result) => {
-      if (result) {
-        res.json(result);
-      } else {
-        res.status(500).send(error);
-      }
-    }
-  );
+    req.body
+  )
+  .then(response => 
+    res.json(response));
 });
 
 router.post('/capture', (req, res, next) => {
@@ -125,7 +110,12 @@ router.post('/customer-create', (req, res, next) => {
   gateway.customer
     .create(req.body)
     .then((result) => res.json(result))
-    .catch((err) => res.status(500).send(err));
+    .catch( err => {
+      console.log(err.type);
+      console.log(err.name);
+      console.log(err.message);
+      res.send(err.message)
+    });
 });
 
 router.post('/customer-find', (req, res, next) => {
@@ -184,6 +174,22 @@ router.post('/accessToken', (req, res, next) => {
 
   res.json(url);
 });
+
+
+router.post('/webhook-parse', (req, res, next) => {
+  const sampleNotification = gateway.webhookTesting.sampleNotification(
+    braintree.WebhookNotification.Kind.Check,
+    "myId"
+  )
+  console.log(sampleNotification.bt_payload, sampleNotification.bt_signature);
+  gateway.webhookNotification.parse(
+    sampleNotification.bt_signature,
+    sampleNotification.bt_payload,
+  ).then(webhookNotification => {
+    res.json(webhookNotification)
+  }).catch( err => res.send(err))
+
+})
 
 //PayPal
 
