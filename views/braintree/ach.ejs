@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- includes the Braintree JS client SDK -->
+  <script src="https://js.braintreegateway.com/web/3.88.1/js/client.min.js"></script>
+  <style>
+    label {
+      display: block;
+      margin: .5rem;
+    }
+
+    fieldset {
+      margin: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <form method='POST' id='my-sample-form'>
+    <fieldset>
+
+      <label for="account-number">
+        Account Number:
+        <input type="text" id='account-number' value="1000000000" />
+      </label>
+
+      <label for="routing-number">Routing Number:
+        <input type="text" id="routing-number" value="011000015" />
+      </label>
+
+      <label for="account-type">
+        Account Type:
+        <select name="account-type" id="account-type">
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+        </select>
+      </label>
+
+      <label for="ownership-type">
+        Ownership Type:
+        <select name="ownership-type" id="ownership-type">
+          <option value="business">Business</option>
+          <option value="personal">Personal</option>
+        </select>
+      </label>
+
+    </fieldset>
+
+    <fieldset>
+      <label for="business-name">Business Name:
+        <input type="text" id="business-name" value="My Business, Inc." />
+      </label>
+
+      <label for="first-name">
+        First Name:
+        <input type="text" id="first-name" value="John" />
+      </label>
+
+      <label for="last-name">
+        Last Name:
+        <input type="text" id="last-name" value="Doe" />
+      </label>
+
+      <label for="billing-street-address">
+        Address:
+        <input type="text" id="billing-street-address" value="1400 Testing Avenue" />
+      </label>
+
+      <label for="billing-extended-address">
+        Address 2:
+        <input type="text" id="billing-extended-address" value="Unit 5" />
+      </label>
+
+      <label for="billing-locality">
+        City:
+        <input type="text" id="billing-locality" value="Saint Louis" />
+      </label>
+
+      <label for="billing-region">
+        State:
+        <input type="text" id="billing-region" value="MO" />
+      </label>
+
+      <label for="billing-postal-code">
+        ZIP:
+        <input type="text" id="billing-postal-code" value="63133" />
+      </label>
+
+    </fieldset>
+
+    <p>By clicking "Submit", I authorize Braintree, a service of PayPal, on behalf of [your business name here] (i) to
+      verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.
+    </p>
+
+    <input type="submit" id="submit-button" value="Submit" />
+    <pre id="serverResponse"></pre>
+    <script>
+        let clientToken = '<%= clientToken %>';
+        
+          console.log(clientToken)
+
+        const form = document.querySelector('#my-sample-form');
+
+        braintree.client.create({
+          authorization: clientToken,
+        }, function (clientErr, clientInstance) {
+          if (clientErr) {
+            console.error('There was an error creating the Client.');
+            throw clientErr;
+          }
+
+          braintree.usBankAccount.create({
+            client: clientInstance
+          }, function (usBankAccountErr, usBankAccountInstance) {
+            // ...
+
+            form.addEventListener('submit', function (event) {
+              event.preventDefault();
+
+              let bankDetails = {
+                accountNumber: $('#account-number').val(),
+                routingNumber: $('#routing-number').val(),
+                accountType: $('#account-type').val(),
+                ownershipType: $('#ownership-type').val(),
+                billingAddress: {
+                  streetAddress: $('#billing-street-address').val(),
+                  extendedAddress: $('#billing-extended-address').val(),
+                  locality: $('#billing-locality').val(),
+                  region: $('#billing-region').val(),
+                  postalCode: $('#billing-postal-code').val()
+                }
+              };
+
+              if (bankDetails.ownershipType === 'personal') {
+                bankDetails.firstName = $('#first-name').val();
+                bankDetails.lastName = $('#last-name').val();
+              } else {
+                bankDetails.businessName = $('#business-name').val();
+              }
+
+              usBankAccountInstance.tokenize({
+                bankDetails: bankDetails,
+                mandateText: 'By clicking "Submit", I authorize Braintree, a service of PayPal, on behalf of [your business name here] (i) to verify my bank account information using bank information and consumer reports and (ii) to debit my bank account.'
+              }, function (tokenizeErr, payload) {
+                if (tokenizeErr) {
+                  console.error('There was an error tokenizing the bank details.');
+                  throw tokenizeErr;
+                }
+                console.log(payload);
+                //alert(JSON.stringify(payload));
+                $.ajax({
+                  type: "POST",
+                  dataType: "text",
+                  url: "ACH_ServerSide.php",
+                  data: { payment_method_nonce: payload.nonce },
+                  success: function (response) {
+                    $('#serverResponse').html(response);
+                    //alert(response);
+
+                  }
+                });
+              });
+            }, false);
+          });
+        });
+
+    </script>
+
+
+
+
+
+</body>
+
+</html>

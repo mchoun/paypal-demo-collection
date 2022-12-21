@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css"
+    href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" />
+  <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+</head>
+
+<body>
+  <div id="paypal-button-container" class="paypal-button-container"></div>
+
+  <script>
+    paypal.Button.render({
+      env: 'sandbox',
+      client: {
+        sandbox: 'AYeru3ZAp-ejxoDPFJg_vnBGnOQM-97_ZQNxDb99MAsdyNhiGm9p-A65cyRD6ld8aNlpeEmwe6Gxv8I1'
+      },
+
+      style: {
+        size: 'small',
+        color: 'gold',
+        shape: 'pill'
+      },
+      commit: false,
+      payment: (data, actions) => {
+        return actions.payment.create({
+          payment: {
+            "application_context": {
+              "shipping_preference": "GET_FROM_FILE"
+            },
+            "intent": "order",
+            "payer": {
+              "payment_method": "paypal"
+            },
+            "redirect_urls": {
+              "cancel_url": "https://www.paypal.com/checkoutnow/error",
+              "return_url": "https://www.paypal.com/checkoutnow/error"
+            },
+            "transactions": [
+              {
+                "amount": {
+                  "currency": "USD",
+                  "total": "35.94"
+                }
+
+              }
+            ]
+          }
+        })
+
+
+      },
+      onAuthorize: (data, actions) => {
+
+        actions.payment.execute().then((response) => console.log('payment was executed', response)).catch(err => console.log(`There was an error ${err}`))
+
+        //return actions.payment.execute().then(() => window.alert('Thank you for your purchase!'))
+        console.log(data)
+      },
+
+      onShippingChange: (data, actions) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Prefer", "return=representation");
+        myHeaders.append("Authorization", "Bearer A21AAIh9_0rl-u-jQoI0aTBCRTnCzh1HP7zVbr7kDdQln7-WOX0hNPUqwBVOtDND_Anes3MY2iX3HtdlMaZ1nzV5ojzMGI2ww");
+        myHeaders.append("Cookie", "ts_c=vr%3D8c40d8781810a604f1046be8ffffc438%26vt%3D8c40d8781810a604f1046be8ffffc439");
+
+        var raw = JSON.stringify([
+          {
+            "op": "replace",
+            "path": "/purchase_units/@reference_id=='default'/amount",
+            "value": {
+              "currency_code": "USD",
+              "value": 44.4
+            }
+          }
+        ]);
+
+        var requestOptions = {
+          method: 'PATCH',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        };
+
+          fetch(`https://api.sandbox.paypal.com/v2/checkout/orders/${data.orderID}`, requestOptions)
+          .then(response => response.text())
+          .then(result => {
+            return console.log(result)
+          })
+          .catch(error => console.log('error', error));
+
+        console.log(data);
+        console.log(actions)
+      }
+
+    }, '#paypal-button-container')
+
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-const paypal =  require('./scripts/paypal-api.js')
+const paypal =  require('./utils/paypal-api.js')
 const express = require('express');
 const router = express.Router();
 
@@ -41,5 +41,10 @@ router.get('/venmo', async function(req, res, next) {
   res.render('venmo', { title: 'Venmo example with Vault', clientId, clientToken});
 });
 
+router.get('/checkoutjs', async function(req, res, next) {
+  const clientId = CLIENT_ID;
+  const clientToken = await paypal.generateAccessToken();
+  res.render('checkoutjs', { title: 'Checkout.js example', clientId, clientToken});
+});
 
 module.exports = router;
