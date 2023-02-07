@@ -1,26 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const paypal = require('./utils/paypal-api');
-const braintree = require('./utils/braintree-api');
+const braintreeApi = require('./utils/braintree-api');
+const braintree = require('braintree');
 
+const { MERCHANT_ID, BT_PUBLIC_KEY, BT_PRIVATE_KEY } = process.env;
 
-router.get('/client-token', async (req, res, next) => {
-  const clientToken = await braintree.generateClientToken();
-  res.send(clientToken)
+const gateway = new braintree.BraintreeGateway({
+  environment: braintree.Environment.Sandbox,
+  merchantId: MERCHANT_ID,
+  publicKey: BT_PUBLIC_KEY,
+  privateKey: BT_PRIVATE_KEY,
 });
 
-router.get('/client-token-customer', (req, res, next) => {
+router.get('/client-token', async (req, res, next) => {
+  const clientToken = await braintreeApi.generateClientToken();
+  res.send(clientToken);
+});
+
+router.get('/client-token-customer', async (req, res, next) => {
   // Create client token
-  gateway.clientToken
-    .generate({
+
+  try {
+    let response = await gateway.clientToken.generate({
       customerId: '841764890',
-    })
-    .then((response) => {
-      res.send(response.clientToken);
-    })
-    .catch((error) => {
-      console.log(error);
     });
+    res.send(response.clientToken);
+  } catch (error) {
+    console.log(err);
+    res.status(500).send(err)
+  }
 });
 
 router.post('/checkout', (req, res, next) => {
@@ -33,7 +42,7 @@ router.post('/checkout', (req, res, next) => {
 router.post('/capture', (req, res, next) => {
   const { transactionId, amount = null } = req.body;
   const options = {
-    orderId: 'MervinOrderId',
+    // orderId: 'MervinOrderId',
     // customFields: {
     //   customfieldone: 'Custom Word!'
     // }
@@ -207,7 +216,7 @@ router.post('/orders/:orderID/capture', async (req, res) => {
 router.post('/clone', async (req, res) => {
   const { transactionId } = req.body;
   let response = await gateway.transaction.cloneTransaction(transactionId, {
-    amount: '10.00',
+    amount: '20.00',
     options: {
       submitForSettlement: true,
     },
