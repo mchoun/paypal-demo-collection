@@ -98,18 +98,18 @@
             }
 
             /* Create Order on the Server Side */
-            const orderResonse = await fetch(`/orders`, {
+            const orderResponse = await fetch(`/api/orders`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(order)
             })
-            if (!orderResonse.ok) {
+            if (!orderResponse.ok) {
               throw new Error("error creating order")
             }
 
-            const { id } = await orderResonse.json()
+            const { id } = await orderResponse.json()
             console.log({ id })
             /**
              * Confirm Payment 
@@ -119,7 +119,7 @@
             /*
             * Capture order (must currently be made on server)
             */
-            await fetch(`/capture/${id}`, {
+            await fetch(`/api/orders/${id}/capture`, {
               method: 'POST',
             });
 
