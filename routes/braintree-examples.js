@@ -1,5 +1,6 @@
 const express = require('express');
 const braintree = require('braintree');
+const { generateClientToken } = require('./utils/braintree-api')
 const router = express.Router();
 
 /* GET home page. */
@@ -59,10 +60,7 @@ router.get('/local-payment-method', function (req, res, next) {
 });
 
 router.get('/ach', async function (req, res, next) {
-  const clientToken = await fetch('/api/client-token')
-    .then((response) => response.text())
-    .catch((err) => console.log(err));
-
+  const clientToken = await generateClientToken();
   res.render('ach', { title: 'Braintree ACH Example', clientToken });
 });
 module.exports = router;
