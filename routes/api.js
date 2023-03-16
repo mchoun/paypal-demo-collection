@@ -14,7 +14,9 @@ const gateway = new braintree.BraintreeGateway({
 })
 
 router.get('/client-token', async (req, res, next) => {
-  const clientToken = await braintreeApi.generateClientToken()
+  const clientToken = await braintreeApi.generateClientToken({
+    merchantAccountId: 'paypal',
+  })
   res.send(clientToken)
 })
 
@@ -35,8 +37,22 @@ router.get('/client-token-customer', async (req, res, next) => {
 router.post('/checkout', (req, res, next) => {
   //TODO: Create logic for the client side integration to pass default parameters if only a nonce is sent to this endpoint
   // const nonceFromTheClient = req.body.paymentMethodNonce;
+  let { amount, paymentMethodNonce, ...restOfBody } = req.body
 
-  gateway.transaction.sale(req.body).then((response) => res.json(response))
+  let defaultRequest = {
+    amount: amount ? amount : '50.00',
+    paymentMethodNonce: paymentMethodNonce
+      ? paymentMethodNonce
+      : 'fake-valid-nonce',
+    options: {
+      paypal: {
+        customField: 'Braintree',
+      },
+    },
+  }
+  gateway.transaction
+    .sale(defaultRequest)
+    .then((response) => res.json(response))
 })
 
 router.post('/capture', (req, res, next) => {
