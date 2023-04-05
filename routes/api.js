@@ -14,10 +14,18 @@ const gateway = new braintree.BraintreeGateway({
 })
 
 router.get('/client-token', async (req, res, next) => {
-  const clientToken = await braintreeApi.generateClientToken({
-    merchantAccountId: 'paypal',
-  })
-  res.send(clientToken)
+  const { merchantAccountId = undefined, customerId = undefined } = req.body
+
+  try {
+    const clientToken = await braintreeApi.generateClientToken({
+      merchantAccountId,
+      customerId,
+    })
+    res.send(clientToken)
+  } catch (error) {
+    console.log(error)
+    res.send(500).send(error)
+  }
 })
 
 router.get('/client-token-customer', async (req, res, next) => {
@@ -39,20 +47,15 @@ router.post('/checkout', (req, res, next) => {
   // const nonceFromTheClient = req.body.paymentMethodNonce;
   let { amount, paymentMethodNonce, ...restOfBody } = req.body
 
-  let defaultRequest = {
+  let request = {
     amount: amount ? amount : '50.00',
     paymentMethodNonce: paymentMethodNonce
       ? paymentMethodNonce
       : 'fake-valid-nonce',
-    options: {
-      paypal: {
-        customField: 'Braintree',
-      },
-    },
+    ...restOfBody,
   }
-  gateway.transaction
-    .sale(defaultRequest)
-    .then((response) => res.json(response))
+
+  gateway.transaction.sale(request).then((response) => res.json(response))
 })
 
 router.post('/capture', (req, res, next) => {
