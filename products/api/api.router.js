@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const paypal = require('./utils/paypal-api')
-const braintreeApi = require('./utils/braintree-api')
+const paypal = require('../paypal/paypal')
+const braintreeApi = require('../braintree/braintree')
 const braintree = require('braintree')
 
 const { MERCHANT_ID, BT_PUBLIC_KEY, BT_PRIVATE_KEY } = process.env

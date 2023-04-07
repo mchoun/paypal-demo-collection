@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 
 const braintreeRoutes = require('../products/braintree')
+const paypalRoutes = require('../products/paypal')
+const apiRoutes = require('../products/api')
+const graphqlRoutes = require('../products/graphql')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -17,9 +20,9 @@ router.get(
   }
 )
 
-app.use('/braintree-examples', braintreeRoutes)
-app.use('/paypal-examples', paypalExamples)
-app.use('/api', apiRouter)
-app.use('/graqhql', graphql)
+router.use('/braintree-examples', braintreeRoutes)
+router.use('/paypal-examples', paypalRoutes)
+router.use('/api', apiRoutes)
+router.use('/graphql', graphqlRoutes)
 
 module.exports = router
