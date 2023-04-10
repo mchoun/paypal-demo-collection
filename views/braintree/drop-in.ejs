@@ -18,11 +18,13 @@
     <div id="checkout-message"></div>
     <div id="dropin-container"></div>
     <button id="submit-button">Submit payment</button>
+    <button id="clear-button">Clear Payment Method</button>
   </div>
 
   <script>
     (async () => {
-      let button = document.querySelector('#submit-button');
+      let sumbitButton = document.querySelector('#submit-button');
+      let clearButton = document.querySelector('#clear-button');
 
       let clientToken = await fetch('/api/client-token')
         .then((response) => response.text())
@@ -69,7 +71,7 @@
           }
         })
         .then(function (dropinInstance) {
-          button.addEventListener('click', function () {
+          sumbitButton.addEventListener('click', function () {
             dropinInstance
               .requestPaymentMethod()
               .then(function (payload) {
@@ -79,6 +81,10 @@
                 console.error(err);
               });
           });
+
+          clearButton.addEventListener('click', function () {
+            dropinInstance.clearSelectedPaymentMethod()
+          })
         })
         .catch(function (err) {
           console.error(err);
