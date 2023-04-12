@@ -1,81 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
-    />
-    <script
-      src="https://www.paypal.com/sdk/js?components=buttons&client-id=<%= clientId %>"
-      data-client-token="<%= clientToken %>"
-    ></script>
-  </head>
-  <body>
-    <div id="paypal-button-container" class="paypal-button-container"></div>
 
-    <script>
-      paypal
-        .Buttons({
-          style: {
-            layout: 'vertical',
-          },
-          createOrder: createOrder,
-          //onShippingChange: onShippingChange,
-          onApprove: onApprove,
-          onCancel: onCancel,
-          onError: onError,
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css"
+    href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" />
+  <script src="https://www.paypal.com/sdk/js?components=buttons&client-id=<%= clientId %>"
+    data-client-token="<%= clientToken %>"></script>
+</head>
+
+<body>
+  <div id="paypal-button-container" class="paypal-button-container"></div>
+
+  <script>
+    paypal
+      .Buttons({
+        style: {
+          layout: 'vertical',
+        },
+        createOrder: createOrder,
+        //onShippingChange: onShippingChange,
+        onApprove: onApprove,
+        onCancel: onCancel,
+        onError: onError,
+      })
+      .render('#paypal-button-container');
+
+    async function createOrder(data, actions) {
+      return fetch('/api/orders', {
+        method: 'post',
+      })
+        .then((response) => response.json())
+        .then((order) => order.id)
+    }
+
+    async function onShippingChange(data, actions) {
+      console.log(`Selected Option: ${JSON.stringify(data.shipping_address)}`)
+      console.log('This is a test!')
+      console.log(actions)
+      console.log(actions.order.get())
+    }
+
+    async function onApprove(data, actions) {
+      return fetch(`/api/orders/${data.orderID}/capture`, {
+        method: 'post',
+      })
+        .then((response) => response.json())
+        .then((orderData) => {
+          console.log(
+            'Capture result',
+            orderData,
+            JSON.stringify(orderData, null, 2)
+          )
+          var transaction = orderData.purchase_units[0].payments.captures[0]
+          alert(`Transaction ${transaction.status}: ${transaction.id}
+
+            See console for all available details
+          `)
         })
-        .render('#paypal-button-container');
 
-      async function createOrder(data, actions) {
-        let response = await actions.order.create({
-          intent: 'CAPTURE',
-          purchase_units: [
-            {
-              amount: {
-                currency_code: 'USD',
-                value: '31.00',
-              },
-              
-            },
-          ],
-        });
-        console.log(response);
-        console.log(data);
-        return response;
-      }
+    }
 
-      async function onShippingChange(data, actions) { 
-        console.log( `Selected Option: ${JSON.stringify(data.shipping_address)}`)
-        console.log('This is a test!')
-        console.log(actions)
-        console.log(actions.order.get())
-      }
+    async function onCancel(data) {
+      console.log(data);
+    }
 
-      async function onApprove(data, actions) {
-        console.table(actions);
-        console.table(data);
-        return actions.order
-          .capture()
-          .then((details) => {
-            console.log(details);
-          })
-          .catch((err) => console.log(err));
-      }
-
-      async function onCancel(data) {
-        console.log(data);
-      }
-
-      async function onError(error) {
-        console.log(error);
-      }
+    async function onError(error) {
+      console.log(error);
+    }
 
 
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>
