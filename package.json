@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@paypal/paypal-js": "^5.1.1",
-    "braintree": "^3.8.0",
+    "braintree": "^3.14.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.0.0",
