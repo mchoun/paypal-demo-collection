@@ -1,6 +1,6 @@
 const express = require('express')
 const braintree = require('braintree')
-const { generateClientToken } = require('braintree')
+const { generateClientToken } = require('./braintree')
 const router = express.Router()
 
 /* GET home page. */

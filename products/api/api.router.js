@@ -3,6 +3,11 @@ const router = express.Router()
 const paypal = require('../paypal/paypal')
 const braintreeApi = require('../braintree/braintree')
 const braintree = require('braintree')
+const {
+  getAllSubscriptionPlansHandler,
+  createPlanHandler,
+  findPlanHandler,
+} = require('../braintree/braintree.handlers')
 
 const { MERCHANT_ID, BT_PUBLIC_KEY, BT_PRIVATE_KEY } = process.env
 
@@ -224,6 +229,10 @@ router.post('/create-payment-method-nonce', async (req, res) => {
   const response = await gateway.paymentMethodNonce.create(token)
   res.json(response)
 })
+
+router.get('/plans', getAllSubscriptionPlansHandler)
+router.get('/plans/:planId', findPlanHandler)
+router.post('/plans', createPlanHandler)
 
 //PayPal
 

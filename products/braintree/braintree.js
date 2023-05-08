@@ -15,4 +15,31 @@ const generateClientToken = async (params) => {
   let clientToken = response.clientToken
   return clientToken
 }
-module.exports = { generateClientToken }
+
+const getAllSubscriptionPlans = async () => {
+  return await gateway.plan.all()
+}
+
+const findPlan = async ({ planId }) => {
+  return await gateway.plan.find(planId)
+}
+const createPlan = async (params) => {
+  return await gateway.plan.create({
+    name: 'Test name',
+    price: 10.0,
+  })
+}
+
+const updatePlan = async ({ planId }) => {
+  return await gateway.plan.update(planId, {
+    description: 'This is a new description',
+  })
+}
+
+module.exports = {
+  generateClientToken,
+  getAllSubscriptionPlans,
+  createPlan,
+  findPlan,
+  updatePlan,
+}
