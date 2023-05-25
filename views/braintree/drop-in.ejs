@@ -30,68 +30,63 @@
         .then((response) => response.text())
         .catch((error) => console.log('error', error));
 
-      braintree.dropin
-        .create({
-          // Insert your tokenization key here
-          authorization: clientToken,
-          container: '#dropin-container',
-          translations: {
-            postalCodeLabel: "Raul is super cool"
+      const config = {
+        authorization: clientToken,
+        container: '#dropin-container',
+        paypal: {
+          flow: 'vault',
+          amount: '40.00',
+          currency: 'USD',
+          enableShippingAddress: true
+        },
+        venmo: {
+          allowDesktop: true,
+        },
+        googlePay: {
+          transactionInfo: {
+            totalPriceStatus: 'FINAL',
+            totalPrice: '1.00',
+            currencyCode: 'USD',
           },
-          paypal: {
-            flow: 'checkout',
-            amount: '40.00',
-            currency: 'USD',
-          },
-          venmo: {
-            allowDesktop: true,
-          },
-          googlePay: {
-            // merchantId: '800000000800',
-            transactionInfo: {
-              totalPriceStatus: 'FINAL',
-              totalPrice: '1.00',
-              currencyCode: 'USD',
+        },
+        applePay: {
+          displayName: 'Mervin Store',
+          paymentRequest: {
+            total: {
+              label: 'Mervin Store',
+              amount: '1.00',
             },
           },
-          applePay: {
-            displayName: 'Mervin Store',
-            paymentRequest: {
-              total: {
-                label: 'Mervin Store',
-                amount: '1.00',
-              },
-            },
-          },
-          card: {
-            overrides: {
-              fields: {
-                expirationDate: {
-                  prefill: "01/24"
-                }
+        },
+        card: {
+          overrides: {
+            fields: {
+              expirationDate: {
+                prefill: "01/24"
               }
             }
           }
-        })
-        .then(function (dropinInstance) {
-          sumbitButton.addEventListener('click', function () {
-            dropinInstance
-              .requestPaymentMethod()
-              .then(function (payload) {
-                console.log(payload)
-              })
-              .catch(function (err) {
-                console.error(err);
-              });
-          });
+        }
+      }
 
-          clearButton.addEventListener('click', function () {
-            dropinInstance.clearSelectedPaymentMethod()
-          })
-        })
-        .catch(function (err) {
-          console.error(err);
-        });
+      try {
+        const dropinInstance = await braintree.dropin.create(config)
+      } catch (err) {
+        console.log(err)
+      }
+
+      sumbitButton.addEventListener('click', async function () {
+        const payload = await dropinInstance.requestPaymentMethod()
+        console.log(payload)
+        // .catch(function (err) {
+        //   console.error(err);
+        // });
+      });
+
+      clearButton.addEventListener('click', function () {
+        dropinInstance.clearSelectedPaymentMethod()
+      })
+
     })();
   </script>
 </body>
