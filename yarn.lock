@@ -82,8 +82,8 @@
   dependencies:
     "balanced-match" "^1.0.0"
 
-"braintree@^3.8.0":
-  "integrity" "sha1-HS7PZbwtEyEz+EJZYeo4eLJD3bc= sha512-J6Ps1nZvf3wiFitPyJYUNaThsY7ATDY7JyUo2kAppXK00ZvPRQ1N0XWp3XNPhNvdJGLRXjmamUvCatEKV9jb7g=="
+"braintree@^3.15.0":
+  "integrity" "sha1-HS7PZbwtEyEz+EJZYeo4eLJD3bc="
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/braintree/-/braintree-3.15.0.tgz"
   "version" "3.15.0"
   dependencies:
@@ -153,6 +153,14 @@
   "integrity" "sha1-r9cT/ibr0hupXOth+agRblClN9E="
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/cookie/-/cookie-0.4.1.tgz"
   "version" "0.4.1"
+
+"cors@^2.8.5":
+  "integrity" "sha1-6sEdpRWS3Ya58G9uesKTs9+HXSk="
+  "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/cors/-/cors-2.8.5.tgz"
+  "version" "2.8.5"
+  dependencies:
+    "object-assign" "^4"
+    "vary" "^1"
 
 "dateformat@4.5.1":
   "integrity" "sha1-wg56nKd9FHkGttwiYai+ClvSFzw="
@@ -390,6 +398,11 @@
   dependencies:
     "whatwg-url" "^5.0.0"
 
+"object-assign@^4":
+  "integrity" "sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM="
+  "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/object-assign/-/object-assign-4.1.1.tgz"
+  "version" "4.1.1"
+
 "on-finished@~2.3.0":
   "integrity" "sha1-IPEzZIGwg811M3mSoWlxqi2QaUc="
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/on-finished/-/on-finished-2.3.0.tgz"
@@ -529,7 +542,7 @@
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/utils-merge/-/utils-merge-1.0.1.tgz"
   "version" "1.0.1"
 
-"vary@~1.1.2":
+"vary@^1", "vary@~1.1.2":
   "integrity" "sha1-IpnwLG3tMNSllhsLn3RSShj2NPw="
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/vary/-/vary-1.1.2.tgz"
   "version" "1.1.2"
@@ -548,7 +561,7 @@
     "webidl-conversions" "^3.0.0"
 
 "xml2js@0.5.0":
-  "integrity" "sha1-2UQGMfuy7YACA/rRBvJyT2LEk7c= sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA=="
+  "integrity" "sha1-2UQGMfuy7YACA/rRBvJyT2LEk7c="
   "resolved" "https://artifactory.g.devqa.gcp.dev.paypalinc.com/artifactory/api/npm/npm-all/xml2js/-/xml2js-0.5.0.tgz"
   "version" "0.5.0"
   dependencies:
