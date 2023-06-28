@@ -63,4 +63,10 @@ router.get('/ach', async function (req, res, next) {
   const clientToken = await generateClientToken()
   res.render('ach', { title: 'Braintree ACH Example', clientToken })
 })
+
+router.get('/venmo', async function (req, res, next) {
+  const clientToken = await generateClientToken()
+  res.render('venmo', { title: 'Braintree Venmo Example', clientToken })
+})
+
 module.exports = router

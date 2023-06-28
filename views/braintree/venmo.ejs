@@ -7,22 +7,56 @@
   </title>
   <link rel="stylesheet" href="/stylesheets/style.css" />
   <!-- includes the Braintree JS client SDK -->
-  <script src="https://js.braintreegateway.com/web/3.88.1/js/client.min.js"></script>
-  <script src="https://js.braintreegateway.com/web/3.88.1/js/venmo.min.js"></script>
-  <script src="https://js.braintreegateway.com/web/3.88.1/js/data-collector.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.88.4/js/client.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.88.4/js/venmo.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.88.4/js/data-collector.min.js"></script>
 </head>
 
 <body>
-  <div id="venmo-button"></div>
+  <button id="venmo-button" style="display: none;">Button</button>
 
   <script>
-( async () => {
+    (async () => {
 
-    let clientToken = await fetch('/api/client-token');
-    
-    let braintreeClient =  braintree.client.create()
+      const clientToken = await fetch('/api/client-token').then(response => response.text());
+      console.log(clientToken)
+      const venmoButton = document.getElementById('venmo-button')
 
-})();
+
+      const braintreeClient = await braintree.client.create({
+        authorization: clientToken
+      })
+
+      const venmoInstance = await braintree.venmo.create({
+        client: braintreeClient,
+        allowDesktop: true,
+        mobileWebFallBack: true,
+        allowDesktopWebLogin: true,
+        paymentMethodUsage: 'multi_use'
+      })
+
+      displayVenmoButton(venmoInstance)
+
+
+
+      function displayVenmoButton(venmoInstance) {
+        venmoButton.style.display = 'block'
+
+        venmoButton.addEventListener('click', async () => {
+          venmoButton.disabled = true
+
+          try {
+            const payload = await venmoInstance.tokenize()
+            console.log('Got a payment method nonce:', payload.nonce)
+            console.log('Venmo user: ', payload.details.username)
+          } catch (err) {
+            console.log(err)
+          }
+
+          venmoButton.removeAttribute('disabled')
+        })
+      }
+    })();
 
   </script>
 </body>
