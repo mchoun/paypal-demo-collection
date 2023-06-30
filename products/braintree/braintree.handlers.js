@@ -1,4 +1,9 @@
-const { getAllSubscriptionPlans, createPlan, findPlan } = require('./braintree')
+const {
+  getAllSubscriptionPlans,
+  createPlan,
+  findPlan,
+  createCreditCard,
+} = require('./braintree')
 
 const getAllSubscriptionPlansHandler = async (req, res) => {
   const allPlans = await getAllSubscriptionPlans()
@@ -21,8 +26,14 @@ const updatePlanHandler = async (req, res) => {
   const response = await updatePlan({ planId })
   res.send(response)
 }
+
+const createCreditCardHandler = async (req, res) => {
+  const response = await createCreditCard(req.body)
+  res.send(response)
+}
 module.exports = {
   getAllSubscriptionPlansHandler,
   createPlanHandler,
   findPlanHandler,
+  createCreditCardHandler,
 }

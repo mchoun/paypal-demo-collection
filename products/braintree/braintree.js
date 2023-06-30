@@ -36,10 +36,15 @@ const updatePlan = async ({ planId }) => {
   })
 }
 
+const createCreditCard = async (creditCardParams) => {
+  return await gateway.creditCard.create(creditCardParams)
+}
+
 module.exports = {
   generateClientToken,
   getAllSubscriptionPlans,
   createPlan,
   findPlan,
   updatePlan,
+  createCreditCard,
 }
