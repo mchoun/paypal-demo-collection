@@ -1,6 +1,6 @@
 const express = require('express')
 const braintree = require('braintree')
-const { generateClientToken } = require('braintree')
+const { generateClientToken } = require('./braintree')
 const router = express.Router()
 
 /* GET home page. */
@@ -63,4 +63,10 @@ router.get('/ach', async function (req, res, next) {
   const clientToken = await generateClientToken()
   res.render('ach', { title: 'Braintree ACH Example', clientToken })
 })
+
+router.get('/venmo', async function (req, res, next) {
+  const clientToken = await generateClientToken()
+  res.render('venmo', { title: 'Braintree Venmo Example', clientToken })
+})
+
 module.exports = router

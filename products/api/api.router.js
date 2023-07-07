@@ -4,6 +4,13 @@ const paypal = require('../paypal/paypal')
 const braintreeApi = require('../braintree/braintree')
 const braintree = require('braintree')
 
+const {
+  getAllSubscriptionPlansHandler,
+  createPlanHandler,
+  findPlanHandler,
+  createCreditCardHandler,
+} = require('../braintree/braintree.handlers')
+
 const { MERCHANT_ID, BT_PUBLIC_KEY, BT_PRIVATE_KEY } = process.env
 
 const gateway = new braintree.BraintreeGateway({
@@ -24,7 +31,7 @@ router.get('/client-token', async (req, res, next) => {
     res.send(clientToken)
   } catch (error) {
     console.log(error)
-    res.send(500).send(error)
+    res.sendStatus(500)
   }
 })
 
@@ -42,20 +49,28 @@ router.get('/client-token-customer', async (req, res, next) => {
   }
 })
 
-router.post('/checkout', (req, res, next) => {
+router.post('/checkout', async (req, res, next) => {
   //TODO: Create logic for the client side integration to pass default parameters if only a nonce is sent to this endpoint
   // const nonceFromTheClient = req.body.paymentMethodNonce;
-  let { amount, paymentMethodNonce, ...restOfBody } = req.body
+  // let { amount, paymentMethodNonce, paymentMethodToken, ...restOfBody } =
+  //   req.body
 
-  let request = {
-    amount: amount ? amount : '50.00',
-    paymentMethodNonce: paymentMethodNonce
-      ? paymentMethodNonce
-      : 'fake-valid-nonce',
-    ...restOfBody,
+  // let request = {
+  //   amount: amount ? amount : '50.00',
+  //   paymentMethodNonce:
+  //     paymentMethodNonce || paymentMethodToken
+  //       ? paymentMethodNonce
+  //       : 'fake-valid-nonce',
+  //   paymentMethodToken: paymentMethodToken,
+  //   ...restOfBody,
+  // }
+
+  try {
+    const response = await gateway.transaction.sale(req.body)
+    res.json(response)
+  } catch (err) {
+    res.json(err)
   }
-
-  gateway.transaction.sale(request).then((response) => res.json(response))
 })
 
 router.post('/capture', (req, res, next) => {
@@ -225,6 +240,12 @@ router.post('/create-payment-method-nonce', async (req, res) => {
   res.json(response)
 })
 
+router.get('/plans', getAllSubscriptionPlansHandler)
+router.get('/plans/:planId', findPlanHandler)
+router.post('/plans', createPlanHandler)
+
+router.post('/createCreditCard', createCreditCardHandler)
+
 //PayPal
 
 router.post('/orders', async (req, res) => {
@@ -247,6 +268,12 @@ router.post('/clone', async (req, res) => {
     },
   })
 
+  res.send(response)
+})
+
+router.post('/test/:string', (req, res) => {
+  const { string } = req.params
+  const response = string.charAt(string.length - 1)
   res.send(response)
 })
 

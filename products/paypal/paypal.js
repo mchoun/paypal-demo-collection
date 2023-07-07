@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 require('dotenv').config()
 const base = 'https://api-m.sandbox.paypal.com'
 const { CLIENT_ID, APP_SECRET } = process.env
@@ -30,7 +31,7 @@ const generateAccessToken = async () => {
 }
 
 const createOrder = async () => {
-  const purchaseAmount = '1.00'
+  const purchaseAmount = '31.00'
   const accessToken = await generateAccessToken()
   const url = `${base}/v2/checkout/orders`
   const response = await fetch(url, {
@@ -38,6 +39,7 @@ const createOrder = async () => {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
+      'PayPal-Request-Id': crypto.randomUUID(),
     },
     body: JSON.stringify({
       intent: 'CAPTURE',
