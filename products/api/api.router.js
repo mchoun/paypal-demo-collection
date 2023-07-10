@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const paypal = require('../paypal/paypal')
 const braintreeApi = require('../braintree/braintree')
+const stripe = require('../stripe/stripe')
 const braintree = require('braintree')
 
 const {
@@ -275,6 +276,22 @@ router.post('/test/:string', (req, res) => {
   const { string } = req.params
   const response = string.charAt(string.length - 1)
   res.send(response)
+})
+
+router.post('/create-payment-intent', async (req, res) => {
+  const { items } = req.body
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 1400,
+    currency: 'usd',
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  })
+
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  })
 })
 
 module.exports = router

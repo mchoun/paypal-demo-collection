@@ -14,6 +14,7 @@ const viewsPathArray = [
   viewsPath,
   `${viewsPath}/braintree`,
   `${viewsPath}/paypal`,
+  `${viewsPath}/stripe`,
 ]
 
 app.set('views', viewsPathArray)

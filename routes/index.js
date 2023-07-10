@@ -5,6 +5,7 @@ const braintreeRoutes = require('../products/braintree')
 const paypalRoutes = require('../products/paypal')
 const apiRoutes = require('../products/api')
 const graphqlRoutes = require('../products/graphql')
+const stripeRoutes = require('../products/stripe')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -24,5 +25,6 @@ router.use('/braintree-examples', braintreeRoutes)
 router.use('/paypal-examples', paypalRoutes)
 router.use('/api', apiRoutes)
 router.use('/graphql', graphqlRoutes)
+router.use('/stripe', stripeRoutes)
 
 module.exports = router
