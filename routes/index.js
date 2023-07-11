@@ -12,6 +12,14 @@ router.get('/', function (req, res, next) {
   res.render('index', { title: 'Braintree and PayPal Demo Index' })
 })
 
+router.get('/success', function (req, res, next) {
+  res.send('success')
+})
+
+router.get('/cancel', function (req, res, next) {
+  res.send('cancel')
+})
+
 router.get(
   '/.well-known/apple-developer-merchantid-domain-association',
   (req, res) => {
