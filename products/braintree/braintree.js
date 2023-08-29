@@ -40,6 +40,10 @@ const createCreditCard = async (creditCardParams) => {
   return await gateway.creditCard.create(creditCardParams)
 }
 
+const creditCardVerificationCreate = async (creditCardParams) => {
+  return await gateway.creditCardVerification.create(creditCardParams)
+}
+
 module.exports = {
   generateClientToken,
   getAllSubscriptionPlans,
@@ -47,4 +51,5 @@ module.exports = {
   findPlan,
   updatePlan,
   createCreditCard,
+  creditCardVerificationCreate,
 }

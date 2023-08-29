@@ -3,6 +3,7 @@ const {
   createPlan,
   findPlan,
   createCreditCard,
+  creditCardVerificationCreate,
 } = require('./braintree')
 
 const getAllSubscriptionPlansHandler = async (req, res) => {
@@ -31,9 +32,16 @@ const createCreditCardHandler = async (req, res) => {
   const response = await createCreditCard(req.body)
   res.send(response)
 }
+
+const createCardVerificationHandler = async (req, res) => {
+  const response = await creditCardVerificationCreate(req.body)
+  res.send(response)
+}
+
 module.exports = {
   getAllSubscriptionPlansHandler,
   createPlanHandler,
   findPlanHandler,
   createCreditCardHandler,
+  createCardVerificationHandler,
 }
