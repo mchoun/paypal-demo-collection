@@ -11,6 +11,12 @@ router.get('/checkout-advance', async function (req, res, next) {
   res.render('checkoutadvance', { clientId, clientToken })
 })
 
+router.get('/checkout-advance-cardfields', async function (req, res, next) {
+  const clientId = CLIENT_ID
+  const clientToken = await paypal.generateClientToken()
+  res.render('checkoutadvance-cardfields', { clientId, clientToken })
+})
+
 router.get('/checkout-standard', async function (req, res, next) {
   const clientId = CLIENT_ID
   const clientToken = await paypal.generateClientToken()
