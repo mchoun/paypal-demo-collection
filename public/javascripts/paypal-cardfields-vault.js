@@ -5,7 +5,7 @@ let vaultCheckbox = document.querySelector('#save')
 
 const cardField = paypal.CardFields({
   createVaultSetupToken: (data, actions) => {
-    return '58653868YF725922W'
+    return '1LG33167LV680410B'
   },
   onApprove: (vaultSetupToken) => {
     console.log(vaultSetupToken)
