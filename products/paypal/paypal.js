@@ -30,6 +30,7 @@ const generateAccessToken = async () => {
   return data.access_token
 }
 
+//TODO: Refactor so that it accepts a body so it can be modified during the client-side request.
 const createOrder = async () => {
   const purchaseAmount = '31.00'
   const accessToken = await generateAccessToken()
