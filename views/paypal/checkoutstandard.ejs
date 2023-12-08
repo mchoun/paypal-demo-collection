@@ -25,6 +25,7 @@
         onApprove: onApprove,
         onCancel: onCancel,
         onError: onError,
+        onShippingAddressChange: onShippingAddressChange
       })
       .render('#paypal-button-container');
 
@@ -34,6 +35,16 @@
       })
         .then((response) => response.json())
         .then((order) => order.id)
+    }
+
+    async function onShippingAddressChange(data, actions) {
+      const buildOrder = await actions.buildOrderPatchPayload({
+        itemTotal: "135.00",
+      })
+
+      console.log(data)
+      console.log(JSON.stringify(buildOrder))
+
     }
 
     async function onShippingChange(data, actions) {
