@@ -41,7 +41,12 @@ const createCreditCard = async (creditCardParams) => {
 }
 
 const creditCardVerificationCreate = async (creditCardParams) => {
-  return await gateway.creditCardVerification.create(creditCardParams)
+  try {
+    return await gateway.creditCardVerification.create(creditCardParams)
+  } catch (e) {
+    console.log(e)
+    return e
+  }
 }
 
 module.exports = {

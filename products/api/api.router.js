@@ -10,7 +10,7 @@ const {
   createPlanHandler,
   findPlanHandler,
   createCreditCardHandler,
-  creditCardVerificationCreate,
+  createCardVerificationHandler,
 } = require('../braintree/braintree.handlers')
 
 const { MERCHANT_ID, BT_PUBLIC_KEY, BT_PRIVATE_KEY } = process.env
@@ -247,7 +247,7 @@ router.get('/plans/:planId', findPlanHandler)
 router.post('/plans', createPlanHandler)
 
 router.post('/createCreditCard', createCreditCardHandler)
-router.post('/createCardVerification', createCreditCardHandler)
+router.post('/createCardVerification', createCardVerificationHandler)
 
 //PayPal
 
