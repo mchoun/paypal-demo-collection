@@ -1,26 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css"
-    />
-    <script src="https://www.paypal.com/sdk/js?client-id=<%= clientId %>&enable-funding=venmo"></script>
-  </head>
-  <body>
-    <div id="venmo-button-container" class="venmo-button-container"></div>
 
-    <script>
-    paypal.Buttons({
-      createOrder,
-      onApprove,
-      onCancel,
-      onError
-    })
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css"
+    href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" />
+  <script src="https://www.paypal.com/sdk/js?client-id=<%= clientId %>&enable-funding=venmo"></script>
+</head>
+
+<body>
+  <div id="venmo-button-container" class="venmo-button-container"></div>
+
+  <script>
+    paypal
+      .Buttons({
+        style: {
+          layout: 'vertical',
+        },
+        createOrder: createOrder,
+        //onShippingChange: onShippingChange,
+        onApprove: onApprove,
+        onCancel: onCancel,
+        onError: onError,
+        onShippingAddressChange: onShippingAddressChange
+      })
+      .render('#paypal-button-container');
+
+    async function createOrder(data, actions) {
+      return fetch('/api/orders', {
+        method: 'post',
+      })
+        .then((response) => response.json())
+        .then((order) => order.id)
+    }
+
+    async function onShippingAddressChange(data, actions) {
+      const buildOrder = await actions.buildOrderPatchPayload({
+        itemTotal: "135.00",
+      })
+
+      console.log(data)
+      console.log(JSON.stringify(buildOrder))
+
+    }
+
+    async function onShippingChange(data, actions) {
+      console.log(`Selected Option: ${JSON.stringify(data.shipping_address)}`)
+      console.log('This is a test!')
+      console.log(actions)
+      console.log(actions.order.get())
+    }
+
+    async function onApprove(data, actions) {
+      return fetch(`/api/orders/${data.orderID}/capture`, {
+        method: 'post',
+      })
+        .then((response) => response.json())
+        .then((orderData) => {
+          console.log(
+            'Capture result',
+            orderData,
+            JSON.stringify(orderData, null, 2)
+          )
+          var transaction = orderData.purchase_units[0].payments.captures[0]
+          alert(`Transaction ${transaction.status}: ${transaction.id}
+
+            See console for all available details
+          `)
+        })
+
+    }
+
+    async function onCancel(data) {
+      console.log(data);
+    }
+
+    async function onError(error) {
+      console.log(error);
+    }
+
+
+  </script>
+</body>
+
 </html>
