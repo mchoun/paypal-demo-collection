@@ -9,10 +9,8 @@
     href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" /> -->
   <link rel="stylesheet" type="text/css"
     href="https://www.paypalobjects.com/webstatic/en_US/developer/docs/css/cardfields.css" />
-  <script
-    src="https://www.paypal.com/sdk/js?client-id=AU5zplOk7tb_JHoqJ7DbhFe4AFV7YtstG7zcJz1y8gk4mBN__fwii6tNZOQgXOQxKo4iYtekThUZmWpa&merchant-id=VFM799FJ6ZSQY&currency=EUR&components=card-fields"
-    data-uid-auto="uid_shvprkyhtxxaefvissqwuttcumozdu">
-    </script>
+  <script src="https://www.paypal.com/sdk/js?components=buttons,card-fields&client-id=<%= clientId %>"
+    data-client-token="<%= clientToken %>"></script>
 </head>
 
 <body>
@@ -40,6 +38,11 @@
   </div>
   <div class="button_container">
     <button type="button" id="submit-button" value="">Pay</button>
+    <button type="button" id="clear-name" value="">Clear Name</button>
+    <button type="button" id="clear-number" value="">Clear Number</button>
+    <button type="button" id="clear-cvv" value="">Clear CVV</button>
+    <button type="button" id="clear-expiry" value="">Clear Expiry</button>
+
   </div>
 
   </form>
@@ -48,7 +51,7 @@
 
 
 
-  <script defer src="/javascripts/paypal-cardfields-vault.js"></script>
+  <script defer src="/javascripts/paypal-cardfields.js"></script>
 </body>
 
 </html>

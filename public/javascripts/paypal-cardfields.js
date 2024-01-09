@@ -69,6 +69,10 @@ const expirationContainer = document.getElementById('expiration-date')
 const cvvContainer = document.getElementById('cvv')
 const cardNameContainer = document.getElementById('card-holder-name')
 const submitButton = document.getElementById('submit-button')
+const clearNameButton = document.getElementById('clear-name')
+const clearNumberButton = document.getElementById('clear-number')
+const clearCvvButton = document.getElementById('clear-cvv')
+const clearExpiryButton = document.getElementById('clear-expiry')
 
 if (cardField.isEligible()) {
   const nameField = cardField.NameField()
@@ -82,8 +86,29 @@ if (cardField.isEligible()) {
   expiryField.render(expirationContainer)
 
   submitButton.addEventListener('click', () => {
+    console.log('inside submit')
     cardField.submit().then(() => {
       console.log('Submitted')
     })
+  })
+
+  clearNameButton.addEventListener('click', (e) => {
+    e.preventDefault
+    nameField.clear()
+  })
+
+  clearNumberButton.addEventListener('click', (e) => {
+    e.preventDefault
+    numberField.clear()
+  })
+
+  clearCvvButton.addEventListener('click', (e) => {
+    e.preventDefault
+    cvvField.clear()
+  })
+
+  clearExpiryButton.addEventListener('click', (e) => {
+    e.preventDefault
+    expiryField.clear()
   })
 }
