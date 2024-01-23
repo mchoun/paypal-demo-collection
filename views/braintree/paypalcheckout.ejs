@@ -20,7 +20,7 @@
     (async () => {
       let myDeviceData;
 
-      let clientToken = await fetch('/api/client-token')
+      let clientToken = await fetch('/api/client-token-customer')
         .then((response) => response.text())
         .catch((error) => console.log('error', error));
 
@@ -45,6 +45,7 @@
         .then((clientInstance) => {
           return braintree.paypalCheckout.create({
             client: clientInstance,
+            autoSetDataUserIdToken: true
           })
 
         })
