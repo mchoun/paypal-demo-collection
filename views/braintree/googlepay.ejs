@@ -1,185 +1,111 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <!-- includes the Braintree JS client SDK -->
-<script src="https://js.braintreegateway.com/web/3.85.2/js/client.min.js"></script>
-<script src="https://js.braintreegateway.com/web/3.85.2/js/paypal-checkout.min.js"></script>
-<script src="https://js.braintreegateway.com/web/3.85.2/js/data-collector.min.js"></script>
-<script src="https://pay.google.com/gp/p/js/pay.js"></script>
-<script src="https://js.braintreegateway.com/web/3.85.2/js/google-payment.min.js"></script>
 
-  </head>
-  <body>
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <!-- includes the Braintree JS client SDK -->
+  <script src="https://js.braintreegateway.com/web/3.85.2/js/client.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.85.2/js/paypal-checkout.min.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.85.2/js/data-collector.min.js"></script>
+  <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+  <script src="https://js.braintreegateway.com/web/3.85.2/js/google-payment.min.js"></script>
 
-<div id="button-container"></div>
-<div id="google-pay-button"></div>
+</head>
+
+<body>
+
+  <div id="button-container"></div>
+  <div id="google-pay-button"></div>
 
 
-<script>
 
-  (async () => { 
-// Make sure to have https://pay.google.com/gp/p/js/pay.js loaded on your page
 
-// You will need a button element on your page styled according to Google's brand guidelines
-// https://developers.google.com/pay/api/web/guides/brand-guidelines
-var button = document.querySelector('#google-pay-button');
-var paymentsClient = new google.payments.api.PaymentsClient({
-  environment: 'TEST' // Or 'PRODUCTION'
-});
-	
+  <script>
+    (async () => {
 
-    //Create client token to be used with BT client
-     let clientToken = await fetch("/api/client-token")
-      .then(response => response.text())
-      .catch(error => console.log('error', error));
 
-braintree.client.create({
-  authorization: clientToken
-}).then(function (clientInstance) {
-  return braintree.googlePayment.create({
-    client: clientInstance,
-    googlePayVersion: 2,
-  });
-}).then(function (googlePaymentInstance) {
-  console.log(googlePaymentInstance)
-  return paymentsClient.isReadyToPay({
-    // see https://developers.google.com/pay/api/web/reference/object#IsReadyToPayRequest
-    apiVersion: 2,
-    apiVersionMinor: 0,
-    allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
-    existingPaymentMethodRequired: true // Optional
-  }).then(function(response) {
-    if (response.result) {
-                const gPayButton = paymentsClient.createButton({
-            buttonColor: 'default',
-            buttonType: 'buy',
-            onClick: () => sendPaymentRequest()
+      let buttonContainer = document.querySelector('#button-container');
+
+      //Create client token to be used with BT client
+      const clientToken = await fetch("/api/client-token")
+        .then(response => response.text())
+        .catch(error => console.log('error', error));
+
+
+      //Initializing Braintree, Google Pay, and Google Pay API
+      const btClient = braintree.client.create({ authorization: clientToken });
+      const gPayClient = btClient.then(clientInstance => braintree.googlePayment.create(
+        {
+          client: clientInstance,
+          googlePayVersion: 2,
+          //googleMerchantId: '' omitted for TEST / Sandbox environment
+        }));
+      const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+
+
+      gPayClient
+        .then(async googlePaymentInstance => {
+          let readyToPay = await paymentsClient.isReadyToPay({
+            apiVersion: 2,
+            apiVersionMinor: 0,
+            allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
+            existingPaymentMethodrequire: true
           });
 
-          button.appendChild(gPayButton);
+          if (readyToPay.result) {
 
-      button.addEventListener('click', function (event) {
-        event.preventDefault();
-
-        var paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
-          transactionInfo: {
-            currencyCode: 'USD',
-            totalPriceStatus: 'FINAL',
-            totalPrice: '100.00' // Your amount
-          }
-        });
-
-        // We recommend collecting billing address information, at minimum
-        // billing postal code, and passing that billing postal code with all
-        // Google Pay card transactions as a best practice.
-        // See all available options at https://developers.google.com/pay/api/web/reference/object
-        var cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
-        cardPaymentMethod.parameters.billingAddressRequired = true;
-        cardPaymentMethod.parameters.billingAddressParameters = {
-          format: 'FULL',
-          phoneNumberRequired: true
-        };
-        debugger;
-        paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData) {
-          return googlePaymentInstance.parseResponse(paymentData);
-        }).then(function (result) {
-          // Send result.nonce to your server
-          // result.type may be either "AndroidPayCard" or "PayPalAccount", and
-          // paymentData will contain the billingAddress for card payments
-        }).catch(function (err) {
-          console.log(err)
-        });
-      });
-    }
-  });
-}).catch(function (err) {
-  console.log(err)
-});})();
-
-</script>
-<!-- <script>
-  (async () => {
-
-
-    let buttonContainer = document.querySelector('#button-container');
-
-    //Create client token to be used with BT client
-    const clientToken = await fetch("/api/client-token")
-      .then(response => response.text())
-      .catch(error => console.log('error', error));
-
-
-    //Initializing Braintree, Google Pay, and Google Pay API
-    const btClient = braintree.client.create({ authorization: clientToken });
-    const gPayClient = btClient.then(clientInstance => braintree.googlePayment.create(
-      {
-        client: clientInstance,
-        googlePayVersion: 2,
-        //googleMerchantId: '' omitted for TEST / Sandbox environment
-      }));
-    const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
-
-
-    gPayClient
-      .then(async googlePaymentInstance => {
-        let readyToPay = await paymentsClient.isReadyToPay({
-          apiVersion: 2,
-          apiVersionMinor: 0,
-          allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods,
-          existingPaymentMethodrequire: true
-        });
-
-        if (readyToPay.result) {
-
-          //TODO: Prefetch can also be used. Otherwise this information should be executed on the onClick event. Parsed out and sent to the BT server side implementation
-          const button = paymentsClient.createButton({
-            buttonColor: 'default',
-            buttonType: 'buy',
-            onClick: () => sendPaymentRequest()
-          });
-
-          buttonContainer.appendChild(button);
-
-          function sendPaymentRequest() {
-            let paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
-              transactionInfo: {
-                currencyCode: 'USD',
-                totalPriceStatus: 'FINAL',
-                totalPrice: '1.00'
-              }
+            //TODO: Prefetch can also be used. Otherwise this information should be executed on the onClick event. Parsed out and sent to the BT server side implementation
+            const button = paymentsClient.createButton({
+              buttonColor: 'default',
+              buttonType: 'buy',
+              onClick: () => sendPaymentRequest()
             });
 
-            let cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
-            cardPaymentMethod.parameters.billingAddressRequired = true;
-            cardPaymentMethod.parameters.billingAddressParameters = {
-              format: 'FULL',
-              phoneNumberRequired: true
-            };
+            buttonContainer.appendChild(button);
 
-            paymentsClient.loadPaymentData(paymentDataRequest)
-            .then( paymentData => googlePaymentInstance.parseResponse(paymentData))
-            .then( result => {
-              fetch('/api/checkout',
-              {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ "paymentMethodNonce": result.nonce})
-              })
-              .then(result => result.json())
-              .then(result => console.log(result))
-              .catch(err => console.log(err))
-            })
-              .catch(err => console.error(err))
+            function sendPaymentRequest() {
+              let paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
+                transactionInfo: {
+                  currencyCode: 'USD',
+                  totalPriceStatus: 'FINAL',
+                  totalPrice: '1.00'
+                }
+              });
+
+              let cardPaymentMethod = paymentDataRequest.allowedPaymentMethods[0];
+              cardPaymentMethod.parameters.billingAddressRequired = true;
+              cardPaymentMethod.parameters.billingAddressParameters = {
+                format: 'FULL',
+                phoneNumberRequired: true
+              };
+
+              paymentsClient.loadPaymentData(paymentDataRequest)
+                .then(paymentData => googlePaymentInstance.parseResponse(paymentData))
+                .then(result => {
+                  fetch('/api/checkout',
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ "paymentMethodNonce": result.nonce })
+                    })
+                    .then(result => result.json())
+                    .then(result => console.log(result))
+                    .catch(err => console.log(err))
+                })
+                .catch(err => console.error(err))
+            }
+
           }
 
-        }
-
-      }).catch(err => console.log(err))
+        }).catch(err => console.log(err))
 
 
-  })();
-</script> -->
-  </body>
+    })();
+  </script>
+
+</body>
+
 </html>
