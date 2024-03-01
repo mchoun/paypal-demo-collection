@@ -8,6 +8,10 @@ router.get('/hostedfields', function (req, res, next) {
   res.render('hostedfields', { title: 'Braintree Hosted Fields Example' })
 })
 
+router.get('/fastlane', function (req, res, next) {
+  res.render('fastlane', { title: 'Braintree Fastlane Example' })
+})
+
 router.get('/drop-in', function (req, res, next) {
   res.render('drop-in', { title: 'Braintree Drop in Example' })
 })

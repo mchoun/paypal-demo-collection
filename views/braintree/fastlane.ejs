@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/public/stylesheets/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- includes the Braintree JS client SDK -->
+  <script src="https://assets.braintreegateway.com/web/3.97.4-connect-alpha.6.3/js/client.min.js"></script>
+  <script src="https://assets.braintreegateway.com/web/3.97.4-connect-alpha.6.3/js/connect.min.js"></script>
+  <script src="https://assets.braintreegateway.com/web/3.97.4-connect-alpha.6.3/js/data-collector.min.js"></script>
+
+  <!-- includes jQuery -->
+  <script src="http://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="container-sm">
+    <!-- <form action="/checkout" id="hosted-fields-form" method="post" class="bootstrap-basic">
+
+
+      <div class="row">
+        <div class="col-sm-6 mb-3">
+          <label for="cc-name">Cardholder Name</label>
+          <div class="form-control" id="cc-name"></div>
+          <small class="text-muted">Full name as displayed on card</small>
+          <div class="invalid-feedback">
+            Name on card is required
+          </div>
+        </div>
+        <div class="col-sm-6 mb-3">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" placeholder="you@example.com">
+          <div class="invalid-feedback">
+            Please enter a valid email address for shipping updates.
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-6 mb-3">
+          <label for="cc-number">Credit card number</label>
+          <div class="form-control" id="card-number"></div>
+          <div class="invalid-feedback">
+            Credit card number is required
+          </div>
+        </div>
+        <div class="col-sm-3 mb-3">
+          <label for="cc-expiration">Expiration</label>
+          <div class="form-control" id="card-expiration"></div>
+          <div class="invalid-feedback">
+            Expiration date required
+          </div>
+        </div>
+        <div class="col-sm-3 mb-3">
+          <label for="cc-expiration">CVV</label>
+          <div class="form-control" id="card-cvv"></div>
+          <div class="invalid-feedback">
+            Security code required
+          </div>
+        </div>
+      </div>
+
+      <div id="checkout-message"></div>
+      <input type="submit" value="Pay" disabled />
+
+
+    </form> -->
+
+    <div>
+      <label for="email">Email</label>
+      <input type="text" id="email" />
+      <div id="watermark-container"></div>
+    </div>
+    <button id="email-button">Button!</button>
+
+
+    <!-- Div container for the Payment Component -->
+    <div id="payment-container"></div>
+    <!-- Submit Button -->
+    <button id="submit-button">Submit Order</button>
+
+  </div>
+
+
+  <script>
+    (async () => {
+      window.localStorage.setItem("axoEnv", "sandbox");
+      var form = document.querySelector('#hosted-fields-form');
+      var submit = document.querySelector('input[type="submit"]');
+
+      let clientToken = await fetch("/api/client-token")
+        .then(response => response.text())
+        .catch(error => console.log('error', error));
+
+      const clientInstance = await braintree.client.create({
+        // Insert your tokenization key here
+        authorization: clientToken
+      })
+
+      const dataCollectorInstance = await braintree.dataCollector.create({
+        client: clientInstance,
+        riskCorrelationId: `${crypto.randomUUID()}`
+      });
+
+      const deviceData = dataCollectorInstance.deviceData;
+
+      const styles = {
+        input: {
+          "borderRadius": "15px"
+        },
+        toggle: {
+          colorPrimary: "darkorange",
+          colorSecondary: "#222222"
+        },
+        text: {
+          body: {
+            color: "#222222",
+            fontSize: "12px"
+          }
+        }
+      };
+
+      const connect = await braintree.connect.create({
+        authorization: clientToken,
+        client: clientInstance,
+        deviceData: deviceData,
+        styles: styles
+      })
+
+      console.log(connect)
+
+      const identity = connect.identity;
+      const profile = connect.profile;
+
+      const connectWatermark = connect.ConnectWatermarkComponent({
+        includeAdditionalInfo: true
+      }).render("#watermark-container");
+
+      const emailButton = document.getElementById("email-button")
+
+      emailButton.addEventListener('click', async () => {
+
+        console.log('button clicked')
+
+        const { customerContextId } = await identity.lookupCustomerByEmail(document.getElementById("email").value)
+
+        if (customerContextId) {
+          console.log(`Hey! You've got an account: ${customerContextId}`)
+        } else {
+          console.log(`You don't have an account`)
+        }
+      })
+
+      const submitButton = document.getElementById("submit-button");
+      const fields = {
+        phoneNumber: {
+          prefill: "1234567890"
+        },
+        cardholderName: {}  // optionally pass this to show the card holder name
+      };
+
+      const connectCardComponent = await connect.ConnectCardComponent({ fields }).render("#payment-container")
+
+      submitButton.addEventListener("click", async () => {
+        const { nonce } = await connectCardComponent.tokenize({
+          billingAddress: {
+            streetAddress: "2211 North 1st St",
+            locality: "San Jose",
+            region: "CA",
+            postalCode: "95131",
+            countryCodeAlpha2: "US" // you can also use the countryCodeAlpha3
+            // or countryCodeNumeric formats
+          }
+        });
+
+        console.log(nonce)
+        // Send the nonce and previously captured device data to server
+        // to complete checkout
+      });
+
+    })();
+  </script>
+</body>
+
+</html>
