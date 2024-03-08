@@ -21,57 +21,6 @@
 
 <body>
   <div class="container-sm">
-    <!-- <form action="/checkout" id="hosted-fields-form" method="post" class="bootstrap-basic">
-
-
-      <div class="row">
-        <div class="col-sm-6 mb-3">
-          <label for="cc-name">Cardholder Name</label>
-          <div class="form-control" id="cc-name"></div>
-          <small class="text-muted">Full name as displayed on card</small>
-          <div class="invalid-feedback">
-            Name on card is required
-          </div>
-        </div>
-        <div class="col-sm-6 mb-3">
-          <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" placeholder="you@example.com">
-          <div class="invalid-feedback">
-            Please enter a valid email address for shipping updates.
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col-sm-6 mb-3">
-          <label for="cc-number">Credit card number</label>
-          <div class="form-control" id="card-number"></div>
-          <div class="invalid-feedback">
-            Credit card number is required
-          </div>
-        </div>
-        <div class="col-sm-3 mb-3">
-          <label for="cc-expiration">Expiration</label>
-          <div class="form-control" id="card-expiration"></div>
-          <div class="invalid-feedback">
-            Expiration date required
-          </div>
-        </div>
-        <div class="col-sm-3 mb-3">
-          <label for="cc-expiration">CVV</label>
-          <div class="form-control" id="card-cvv"></div>
-          <div class="invalid-feedback">
-            Security code required
-          </div>
-        </div>
-      </div>
-
-      <div id="checkout-message"></div>
-      <input type="submit" value="Pay" disabled />
-
-
-    </form> -->
 
     <div>
       <label for="email">Email</label>
@@ -79,6 +28,9 @@
       <div id="watermark-container"></div>
     </div>
     <button id="email-button">Button!</button>
+
+    <button disabled id="change-address-button">Change Address</button>
+    <button disabled id="change-card-button">Change Card</button>
 
 
     <!-- Div container for the Payment Component -->
@@ -144,6 +96,7 @@
       }).render("#watermark-container");
 
       const emailButton = document.getElementById("email-button")
+      const submitButton = document.getElementById("submit-button");
 
       emailButton.addEventListener('click', async () => {
 
@@ -152,38 +105,86 @@
         const { customerContextId } = await identity.lookupCustomerByEmail(document.getElementById("email").value)
 
         if (customerContextId) {
+          const changeAddressButton = document.getElementById('change-address-button')
+          const changeCardButton = document.getElementById('change-card-button')
+          changeAddressButton.disabled = false
+          changeCardButton.disabled = false
+
+          changeCardButton.addEventListener('click', async () => {
+            const { selectionChanged, selectedCard } = await profile.showCardSelector();
+
+            if (selectionChanged) {
+              console.log(`Card Changed! : ${JSON.stringify(selectedCard, null, 2)}`)
+            } else {
+              console.log('No selection changed', selectionChanged, selectedCard)
+            }
+          })
+
+          changeAddressButton.addEventListener('click', async () => {
+            const { selectionChanged, selectedAddress } = await profile.showShippingAddressSelector();
+
+            if (selectionChanged) {
+              console.log(`Address Changed! : ${JSON.stringify(selectedAddress, null, 2)}`)
+            } else {
+              console.log('No selection changed', selectionChanged, selectedAddress)
+            }
+          })
+
           console.log(`Hey! You've got an account: ${customerContextId}`)
+          const customerAuthData = await identity.triggerAuthenticationFlow(customerContextId)
+          const { authenticationState, profileData } = customerAuthData
+
+          console.log(customerAuthData)
+
+          if (authenticationState === 'succeeded') {
+            const { name, shippingAddress, card } = profileData
+            console.log(profileData)
+
+            submitButton.addEventListener("click", async () => {
+              const response = await fetch('/api/checkout',
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ "paymentMethodNonce": card.id })
+                })
+            });
+
+
+          } else {
+            console.log('Authentication failed')
+          }
+
+
+
         } else {
-          console.log(`You don't have an account`)
+          const fields = {
+            phoneNumber: {
+              prefill: "1234567890"
+            },
+            cardholderName: {}  // optionally pass this to show the card holder name
+          };
+
+          const connectCardComponent = await connect.ConnectCardComponent({ fields }).render("#payment-container")
+
+          submitButton.addEventListener("click", async () => {
+            const { nonce } = await connectCardComponent.tokenize({
+              billingAddress: {
+                streetAddress: "2211 North 1st St",
+                locality: "San Jose",
+                region: "CA",
+                postalCode: "95131",
+                countryCodeAlpha2: "US" // you can also use the countryCodeAlpha3
+                // or countryCodeNumeric formats
+              }
+            });
+
+            console.log(nonce)
+            // Send the nonce and previously captured device data to server
+            // to complete checkout
+          });
         }
       })
 
-      const submitButton = document.getElementById("submit-button");
-      const fields = {
-        phoneNumber: {
-          prefill: "1234567890"
-        },
-        cardholderName: {}  // optionally pass this to show the card holder name
-      };
-
-      const connectCardComponent = await connect.ConnectCardComponent({ fields }).render("#payment-container")
-
-      submitButton.addEventListener("click", async () => {
-        const { nonce } = await connectCardComponent.tokenize({
-          billingAddress: {
-            streetAddress: "2211 North 1st St",
-            locality: "San Jose",
-            region: "CA",
-            postalCode: "95131",
-            countryCodeAlpha2: "US" // you can also use the countryCodeAlpha3
-            // or countryCodeNumeric formats
-          }
-        });
-
-        console.log(nonce)
-        // Send the nonce and previously captured device data to server
-        // to complete checkout
-      });
 
     })();
   </script>
