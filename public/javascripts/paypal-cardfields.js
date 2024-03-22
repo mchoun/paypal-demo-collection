@@ -70,12 +70,27 @@ const cvvContainer = document.getElementById('cvv')
 const cardNameContainer = document.getElementById('card-holder-name')
 const submitButton = document.getElementById('submit-button')
 const clearNameButton = document.getElementById('clear-name')
+const placeholderNameButton = document.getElementById('placeholder-name')
 const clearNumberButton = document.getElementById('clear-number')
 const clearCvvButton = document.getElementById('clear-cvv')
 const clearExpiryButton = document.getElementById('clear-expiry')
+const renderButton = document.getElementById('render-button')
+const checkbox = document.getElementById('name-checkbox')
 
 if (cardField.isEligible()) {
-  const nameField = cardField.NameField()
+  const nameField = cardField.NameField({
+    placeholder: placeholder1,
+    inputEvents: {
+      onChange: (event) => {
+        console.log('returns a stateObject', event)
+      },
+    },
+    style: {
+      '.invalid': {
+        color: 'purple',
+      },
+    },
+  })
   const numberField = cardField.NumberField()
   const cvvField = cardField.CVVField()
   const expiryField = cardField.ExpiryField()
@@ -85,11 +100,23 @@ if (cardField.isEligible()) {
   cvvField.render(cvvContainer)
   expiryField.render(expirationContainer)
 
+  checkbox.addEventListener('')
   submitButton.addEventListener('click', () => {
     console.log('inside submit')
-    cardField.submit().then(() => {
-      console.log('Submitted')
-    })
+    cardField
+      .submit({
+        billingAddress: {
+          countryCodeAlpha2: countryCodeAlpha2,
+        },
+      })
+      .then(() => {
+        console.log('Submitted')
+      })
+  })
+
+  placeholderNameButton.addEventListener('click', (e) => {
+    e.preventDefault
+    nameField.setAttribute('placeholder', 'This is a new placeholder')
   })
 
   clearNameButton.addEventListener('click', (e) => {

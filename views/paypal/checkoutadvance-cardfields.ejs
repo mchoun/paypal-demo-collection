@@ -20,30 +20,33 @@
   <div class="card_container">
     <form id="card-form">
       <label for="card-number"></label>Card Number</label>
-      <div id="card-number" class="card_field"></div>
+      <div id="card-number"></div>
       <div>
         <label for="expiration-date">Expiration Date</label>
-        <div id="expiration-date" class="card_field"></div>
+        <div id="expiration-date"></div>
       </div>
       <div>
         <label for="cvv">CVV</label>
-        <div id="cvv" class="card_field"></div>
+        <div id="cvv"></div>
       </div>
       <label for="card-holder-name">Name on Card</label>
-      <input type="text" id="card-holder-name" name="card-holder-name" autocomplete="off" value="Test Name" />
-      <input type="text" id="card-billing-address-country" name="card-billing-address-country" autocomplete="off"
-        placeholder="country code" value="US" />
-      <label for="save">Save your card (Vault V3 Integration)</label>
-      <input type="checkbox" id="save" name="save">
+      <div type="text" id="card-holder-name" name="card-holder-name" autocomplete="off" value="Test Name" />
+      <!-- <input type="text" id="card-billing-address-country" name="card-billing-address-country" autocomplete="off"
+        placeholder="country code" value="US" /> -->
+      <!-- <label for="save">Save your card (Vault V3 Integration)</label>
+      <input type="checkbox" id="save" name="save"> -->
   </div>
   <div class="button_container">
     <button type="button" id="submit-button" value="">Pay</button>
     <button type="button" id="clear-name" value="">Clear Name</button>
+    <button type="button" id="placeholder-name" value="">Placeholder Name</button>
     <button type="button" id="clear-number" value="">Clear Number</button>
     <button type="button" id="clear-cvv" value="">Clear CVV</button>
     <button type="button" id="clear-expiry" value="">Clear Expiry</button>
+    <button type="button" id="render-button" value="">Render Card-Fields</button>
 
   </div>
+  <input type="checkbox" id="name-checkbox">
 
   </form>
   </div>
