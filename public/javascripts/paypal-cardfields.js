@@ -33,6 +33,10 @@ paypal
   })
   .render('#paypal-button-container')
 
+const style = {
+  input: { color: 'purple', border: 'solid purple', 'font-size': '14px' },
+}
+
 const cardField = paypal.CardFields({
   createOrder: (data) => {
     return fetch('/api/orders', {
@@ -62,6 +66,7 @@ const cardField = paypal.CardFields({
   onError: (error) => {
     console.error(error)
   },
+  style: style,
 })
 
 const cardNumberContainer = document.getElementById('card-number')
@@ -79,15 +84,9 @@ const checkbox = document.getElementById('name-checkbox')
 
 if (cardField.isEligible()) {
   const nameField = cardField.NameField({
-    placeholder: placeholder1,
     inputEvents: {
       onChange: (event) => {
         console.log('returns a stateObject', event)
-      },
-    },
-    style: {
-      '.invalid': {
-        color: 'purple',
       },
     },
   })
@@ -95,10 +94,14 @@ if (cardField.isEligible()) {
   const cvvField = cardField.CVVField()
   const expiryField = cardField.ExpiryField()
 
-  nameField.render(cardNameContainer)
-  numberField.render(cardNumberContainer)
-  cvvField.render(cvvContainer)
-  expiryField.render(expirationContainer)
+  renderButton.addEventListener('click', (e) => {
+    e.preventDefault
+
+    nameField.render(cardNameContainer)
+    numberField.render(cardNumberContainer)
+    cvvField.render(cvvContainer)
+    expiryField.render(expirationContainer)
+  })
 
   checkbox.addEventListener('')
   submitButton.addEventListener('click', () => {

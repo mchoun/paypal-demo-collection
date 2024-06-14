@@ -38,7 +38,7 @@ const cardField = paypal.CardFields({
     console.log(data)
   },
   onError: (error) => {
-    console.error(error)
+    console.error('mervin error', error)
   },
 })
 

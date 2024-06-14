@@ -58,11 +58,11 @@ const createOrder = async () => {
           billing_address: {
             country_code: 'US',
           },
-          attributes: {
-            vault: {
-              store_in_vault: 'ON_SUCCESS',
-            },
-          },
+          // attributes: {
+          //   verification: {
+          //     method: 'SCA_ALWAYS',
+          //   },
+          // },
         },
       },
     }),
