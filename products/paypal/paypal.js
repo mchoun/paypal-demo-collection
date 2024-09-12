@@ -19,9 +19,15 @@ const generateClientToken = async () => {
 
 const generateAccessToken = async () => {
   const auth = Buffer.from(CLIENT_ID + ':' + APP_SECRET).toString('base64')
+
+  const searchParams = new URLSearchParams()
+  searchParams.append('grant_type', 'client_credentials')
+  searchParams.append('response_type', 'client_token')
+  searchParams.append('intent', 'sdk_init')
+
   const response = await fetch(`${base}/v1/oauth2/token`, {
     method: 'post',
-    body: 'grant_type=client_credentials',
+    body: searchParams,
     headers: {
       Authorization: `Basic ${auth}`,
     },

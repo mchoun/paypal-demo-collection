@@ -82,4 +82,13 @@ router.get('/apple-pay', async function (req, res, next) {
   res.render('apple-pay', { title: 'Apple Pay Example', clientId, clientToken })
 })
 
+router.get('/fastlane', async function (req, res, next) {
+  const clientToken = await paypal.generateAccessToken()
+  res.render('fastlane-paypal', {
+    title: 'Fastlane example',
+    clientId: CLIENT_ID,
+    clientToken,
+  })
+})
+
 module.exports = router
